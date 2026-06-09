@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/debug/view/DebugStatsOverlay.gd" id="1_debug_stats_overlay"]
+
+[node name="DebugStatsOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_debug_stats_overlay")
+stats_label_path = NodePath("StatsPanel/StatsLabel")
+
+[node name="StatsPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 300.0
+offset_bottom = 118.0
+mouse_filter = 2
+
+[node name="StatsLabel" type="Label" parent="StatsPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "FPS: 0  Frame: 0.0 ms
+Process: 0.0 ms  Physics: 0.0 ms
+DrawCall: 0  Nodes: 0
+Mem: 0 B  VRAM: 0 B"
+horizontal_alignment = 0

@@ -1,0 +1,58 @@
+---
+description: FACTORIA map 模块目录边界、chunk/terrain/view/adapter 分层约定
+globs: assets/src/game/map/**/*.{gd,tscn}
+alwaysApply: false
+owner: gameplay
+status: active
+last_updated: 2026-05-15
+version: 1.1.0
+---
+
+# Map 模块架构
+
+## 目录职责
+
+- `assets/src/game/map/core/`：chunk 生成/缓存/存储、terrain 数据 catalog、autoplace 规则 catalog、transition rule catalog。
+  - 典型对象：`MapChunkGenerator` / `MapChunkCache` / `MapChunkStore` / `TerrainCatalog` / `TerrainAutoplaceCatalog` / `TerrainTransitionCatalog`
+- `assets/src/game/map/model/`：`MapChunkData`、`TerrainDef`、`TerrainAutoplaceRule`、`TerrainSpritesheetLayout` 等纯数据。
+  - `TerrainDef` 仅承载 terrain 的业务属性（id / numeric_id / map_color / walkable / buildable / is_water / transition_group / generation_tags 等），**不持有视图字段**。
+- `assets/src/game/map/view/`：地图运行时显示节点、TileSet 构建、chunk layer 渲染、视图侧 catalog 与变体解析。
+  - 典型对象：`ChunkMapView` / `MapTileSetBuilder` / `ChunkLayerRenderer` / `TerrainRenderCatalog` / `TerrainRenderProfile` / `TerrainVariantResolver`
+  - 视图字段（texture_path / atlas_coords / texture_region_size / spritesheet_layout / fallback_*）统一收敛在 `TerrainRenderProfile`，由 `TerrainRenderCatalog` 按 `numeric_id` 索引。
+- `assets/src/game/map/adapter/`：map 与 `assets/src/core/**` 通用算法之间的适配层，例如 terrain transition group grid（`MapTerrainTransitionAdapter`）。
+
+## 依赖方向
+
+推荐方向：
+
+`planet -> map/core/model/adapter -> core/terrain-trans`
+`map/view -> map/core/model + TerrainRenderCatalog`
+
+允许：
+
+- `map/adapter` 依赖 `map/model`、`map/core` 的查询接口，以及 `assets/src/core/**` 通用算法。
+- `map/view` 持有 `Node2D` / `TileMapLayer` 并消费 `map/core` 输出。
+- `map/view` 自建 `TerrainRenderCatalog` 实例，按 `numeric_id` 取 `TerrainRenderProfile`。
+- `map/core` 通过上层传入的存储接口或 Store 类读写 slot 附属资源。
+- `MapChunkGenerator.setup(...)` 接收 `TerrainCatalog + TerrainAutoplaceCatalog + PlanetPresetDef`；`MapChunkCache.setup(...)` 同步透传。
+
+禁止：
+
+- `assets/src/core/**` 反向依赖 `assets/src/game/map/**`。
+- `map/model` 持有 SceneTree、Node、Controller 或 UI。
+- `map/model/TerrainDef` 重新承载 texture_path / atlas_coords / spritesheet_layout 等视图字段。
+- `map/core` 反向依赖 `map/view`（`TerrainRenderCatalog` / `TerrainRenderProfile` / `TerrainVariantResolver` 都属于 view）。
+- `map/view` 直接拼接存档路径、决定生成规则或直接访问 `SaveManager`。
+- 把 autoplace 规则塞回 `TerrainCatalog`；它们应留在 `TerrainAutoplaceCatalog`。
+- `map` 模块承载 planet preset 生命周期；预设归 `game/planet`。
+- 使用旧版“世界”命名表示 map/planet 正式模块。
+
+## terrain-trans 边界
+
+- `assets/src/core/terrain-trans` 只处理通用 transition layout、rule、mask、resolver。
+- `core/terrain-trans` 的输入应是通用 group grid，不应出现 `MapChunkData`、`TerrainCatalog`、`PlanetController`。
+- `MapTerrainTransitionAdapter` 负责把 map terrain id 转成 transition group，并调用 core resolver。
+
+## 序列化
+
+- map/model 序列化辅助（vector / packed array / dictionary 解析）一律走 `assets/src/core/utils/SerializeUtils.gd`，不在每个 model 内重复实现私有 `_parse_vector2i` / `_parse_dictionary_array` 等方法。

@@ -1,0 +1,153 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/debug/view/DebugPopLayer.gd" id="1_debug_pop_layer"]
+
+[node name="DebugPopLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_debug_pop_layer")
+close_button_path = NodePath("Mask/Panel/Content/CloseButton")
+speed_slider_path = NodePath("Mask/Panel/Content/SpeedSection/SpeedSlider")
+speed_value_label_path = NodePath("Mask/Panel/Content/SpeedSection/SpeedValueLabel")
+time_value_label_path = NodePath("Mask/Panel/Content/TimeSection/TimeValueLabel")
+time_slider_path = NodePath("Mask/Panel/Content/TimeSection/TimeSlider")
+dawn_button_path = NodePath("Mask/Panel/Content/TimeSection/TimePresetGrid/DawnButton")
+noon_button_path = NodePath("Mask/Panel/Content/TimeSection/TimePresetGrid/NoonButton")
+dusk_button_path = NodePath("Mask/Panel/Content/TimeSection/TimePresetGrid/DuskButton")
+midnight_button_path = NodePath("Mask/Panel/Content/TimeSection/TimePresetGrid/MidnightButton")
+stats_toggle_path = NodePath("Mask/Panel/Content/StatsSection/StatsToggle")
+stats_detail_label_path = NodePath("Mask/Panel/Content/StatsSection/StatsDetailLabel")
+
+[node name="Mask" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.35)
+
+[node name="Panel" type="PanelContainer" parent="Mask"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -360.0
+offset_right = 340.0
+offset_bottom = 360.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Mask/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="Mask/Panel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "调试面板"
+horizontal_alignment = 1
+
+[node name="SpeedSection" type="VBoxContainer" parent="Mask/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SpeedValueLabel" type="Label" parent="Mask/Panel/Content/SpeedSection"]
+layout_mode = 2
+text = "角色移速：1.00 倍"
+horizontal_alignment = 1
+
+[node name="SpeedSlider" type="HSlider" parent="Mask/Panel/Content/SpeedSection"]
+custom_minimum_size = Vector2(360, 28)
+layout_mode = 2
+min_value = 1.0
+max_value = 3.0
+step = 0.25
+value = 1.0
+
+[node name="HintLabel" type="Label" parent="Mask/Panel/Content/SpeedSection"]
+layout_mode = 2
+text = "范围：1.00 - 3.00 倍"
+horizontal_alignment = 1
+
+[node name="TimeSection" type="VBoxContainer" parent="Mask/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TimeValueLabel" type="Label" parent="Mask/Panel/Content/TimeSection"]
+layout_mode = 2
+text = "时间：第 1 天 08:00"
+horizontal_alignment = 1
+
+[node name="TimeSlider" type="HSlider" parent="Mask/Panel/Content/TimeSection"]
+custom_minimum_size = Vector2(420, 28)
+layout_mode = 2
+max_value = 24.0
+step = 0.25
+value = 8.0
+
+[node name="TimePresetGrid" type="GridContainer" parent="Mask/Panel/Content/TimeSection"]
+layout_mode = 2
+columns = 4
+
+[node name="DawnButton" type="Button" parent="Mask/Panel/Content/TimeSection/TimePresetGrid"]
+custom_minimum_size = Vector2(102, 36)
+layout_mode = 2
+text = "清晨 06:00"
+
+[node name="NoonButton" type="Button" parent="Mask/Panel/Content/TimeSection/TimePresetGrid"]
+custom_minimum_size = Vector2(102, 36)
+layout_mode = 2
+text = "正午 12:00"
+
+[node name="DuskButton" type="Button" parent="Mask/Panel/Content/TimeSection/TimePresetGrid"]
+custom_minimum_size = Vector2(102, 36)
+layout_mode = 2
+text = "黄昏 18:00"
+
+[node name="MidnightButton" type="Button" parent="Mask/Panel/Content/TimeSection/TimePresetGrid"]
+custom_minimum_size = Vector2(102, 36)
+layout_mode = 2
+text = "午夜 00:00"
+
+[node name="StatsSection" type="VBoxContainer" parent="Mask/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="StatsToggle" type="CheckButton" parent="Mask/Panel/Content/StatsSection"]
+custom_minimum_size = Vector2(620, 36)
+layout_mode = 2
+text = "显示右上角性能摘要"
+
+[node name="StatsDetailLabel" type="Label" parent="Mask/Panel/Content/StatsSection"]
+custom_minimum_size = Vector2(620, 190)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "性能
+FPS: 0    Frame: 0.00 ms
+Process: 0.00 ms    Physics: 0.00 ms
+DrawCall: 0    Objects: 0    Primitives: 0
+
+对象
+Nodes: 0    Objects: 0    Resources: 0    Orphans: 0
+
+内存
+Static: 0 B    Texture: 0 B
+VRAM: 0 B    Buffer: 0 B
+
+Physics2D
+Active: 0    Pairs: 0    Islands: 0"
+
+[node name="CloseButton" type="Button" parent="Mask/Panel/Content"]
+custom_minimum_size = Vector2(620, 44)
+layout_mode = 2
+text = "关闭"

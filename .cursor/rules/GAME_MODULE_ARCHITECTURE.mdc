@@ -1,0 +1,67 @@
+---
+description: FACTORIA 无界面游戏业务模块与游戏场景的目录边界与分层约定
+globs: assets/src/game/**/*.{gd,tscn}
+alwaysApply: false
+owner: gameplay
+status: active
+last_updated: 2026-05-15
+version: 1.1.0
+---
+
+# Game 模块架构
+
+## 适用目录
+
+无界面的游戏业务系统放在：
+
+- `assets/src/game/<module>/core/*.gd`
+- `assets/src/game/<module>/model/*.gd`
+- `assets/src/game/<module>/core/*Helper.gd`
+- `assets/src/game/scene/<module>/*.tscn`
+- `assets/src/game/scene/<module>/*.gd`
+
+例如成就、星球、地图、工厂、科技、蓝图、统计等。
+
+## 分层职责
+
+- **Controller**：继承 `BaseController`，**进 `ControllerManager`** 的全局单例。负责跨场景业务流程、`signal`、存档参与接口（`export_save_data` / `import_save_data` / `get_save_scope`）。命名 `*Controller`。
+- **Coordinator**：`RefCounted`，**不进 `ControllerManager`**，跟随单个 gameplay scene 实例存活的编排对象。负责该场景期间的 UI 开关、输入、跨模块协调，可能持有 scene 内节点引用。命名 `*Coordinator`。
+- **Model**：继承 `BaseModel` 或 `RefCounted`，负责模块状态、快照与序列化。序列化辅助方法走 `assets/src/core/utils/SerializeUtils.gd`，不在每个 model 内重复实现。
+- **Helper**：模块内纯函数工具，不持有运行时状态和节点引用。
+- **Gameplay Scene**：承载世界、实体、地图或模拟内容，使用 `Node2D` / `Node3D` 等游戏节点作为根节点，并由 `SceneManager` 加载。
+- **UI Scene**：承载界面、弹窗、面板，放在 `assets/src/ui`，继承 `BaseUI` 并通过 `UIManager` 打开。
+
+## Controller vs Coordinator 选择
+
+需要取舍时按下表判断：
+
+| 特征 | 选 Controller | 选 Coordinator |
+|------|--------------|----------------|
+| 生命周期 | 跨场景，与游戏进程同寿 | 跟随单个 gameplay scene |
+| 是否参与存档 | 是（slot 或 profile） | 否 |
+| 跨模块外部调用方 | 多个 UI / 其它 Controller 通过 `ControllerManager` 取 | 仅本场景 `*Scene.gd` 内部使用 |
+| 持有状态 | 业务数据 / model 快照 | scene 节点引用 / UI overlay instance id |
+| 注册时机 | 启动期由 `SaveController.on_game_start` 一次性 ensure | `*Scene.on_scene_enter` 中 `new()` 后 `setup` |
+
+如果一个对象同时具备"跨场景"+"参与存档"，必然是 Controller；如果它持有 scene 节点引用且无外部调用方，必然是 Coordinator。两者并存时通常一对（如 `PlanetController` + `PlanetSceneCoordinator`）。
+
+## 依赖方向
+
+推荐方向：
+
+`UI -> Game Controller -> Game Model`
+`Gameplay Scene -> Game Coordinator -> Game Controller / 核心管理器`
+
+允许 Game Controller 调用核心管理器，例如 `ControllerManager`、`SaveManager`（统一通过 `BaseController._get_save_manager()` 取，不再自行 SceneTree 解析）。
+
+允许 Game Coordinator 调用 `UIManager` / `SceneManager` / `ControllerManager`，编排本场景期间的 UI 与跨模块流程。
+
+禁止：
+
+- Game Model 持有 UI 节点、Controller、SceneTree。
+- Game 模块直接拼接存档路径或绕过 `SaveManager` 写磁盘。
+- 为了"按功能聚合"把无界面系统放进 `assets/src/ui`。
+- 把 Gameplay Scene 当作 UI Scene：使用 `Control` / `BaseUI` 作为根节点，或通过 `UIManager` 打开。
+- 绕过 `SceneManager` 直接在业务 Controller 中 `load()` / `instantiate()` gameplay scene。
+- 把 Coordinator 注册进 `ControllerManager`；它持有的 scene 节点引用跨场景会变成悬空指针。
+- 让 Coordinator 实现 `export_save_data` / `import_save_data`；存档参与永远走 Controller。

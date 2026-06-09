@@ -1,0 +1,85 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/startgame/view/StartGameLayer.gd" id="1_start_game_layer"]
+
+[node name="StartGameLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_start_game_layer")
+title_label_path = NodePath("Background/MarginContainer/Content/TitleLabel")
+subtitle_label_path = NodePath("Background/MarginContainer/Content/SubtitleLabel")
+status_label_path = NodePath("Background/MarginContainer/Content/StatusLabel")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.055, 0.063, 0.082, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 96.0
+offset_top = 72.0
+offset_right = -96.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Background/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Background/MarginContainer/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "FACTORIA"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Background/MarginContainer/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "工厂世界启动中"
+horizontal_alignment = 1
+
+[node name="ButtonColumn" type="VBoxContainer" parent="Background/MarginContainer/Content"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 12
+
+[node name="StartButton" type="Button" parent="Background/MarginContainer/Content/ButtonColumn"]
+custom_minimum_size = Vector2(260, 52)
+layout_mode = 2
+text = "开始游戏"
+
+[node name="SettingsButton" type="Button" parent="Background/MarginContainer/Content/ButtonColumn"]
+custom_minimum_size = Vector2(260, 52)
+layout_mode = 2
+text = "设置"
+
+[node name="ExitButton" type="Button" parent="Background/MarginContainer/Content/ButtonColumn"]
+custom_minimum_size = Vector2(260, 52)
+layout_mode = 2
+text = "退出"
+
+[node name="StatusLabel" type="Label" parent="Background/MarginContainer/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "请选择一个操作。"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Background/MarginContainer/Content/ButtonColumn/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Background/MarginContainer/Content/ButtonColumn/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="Background/MarginContainer/Content/ButtonColumn/ExitButton" to="." method="_on_exit_button_pressed"]

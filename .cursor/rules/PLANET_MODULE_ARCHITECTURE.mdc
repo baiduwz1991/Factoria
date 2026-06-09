@@ -1,0 +1,57 @@
+---
+description: FACTORIA planet 模块目录边界、依赖方向、Controller / Coordinator 分工与存档生命周期约定
+globs: assets/src/game/planet/**/*.{gd,tscn}
+alwaysApply: false
+owner: gameplay
+status: active
+last_updated: 2026-05-15
+version: 1.1.0
+---
+
+# Planet 模块架构
+
+## 目录职责
+
+- `assets/src/game/planet/core/`：星球生命周期、星球预设目录、持久化业务 Controller、gameplay scene 编排。
+  - `PlanetController`：进 `ControllerManager` 的全局单例 Controller，承载 `SAVE_SCOPE_SLOT` 存档参与、星球预设查询、chunk 编排、对外提供 `get_chunk_size/get_tile_size` 等轻量 getter。
+  - `PlanetPresetCatalog`：星球预设静态目录（标准/富资源/荒芜等）。
+  - `PlanetSceneCoordinator`：**不进 ControllerManager**，跟随单个 `GameScene` 实例存活，编排 HUD / 系统菜单 / ESC 输入 / 调试浮层 / 成就触发等 scene-bound 流程。
+- `assets/src/game/planet/model/`：星球存档头（`PlanetSaveData`）、星球预设定义（`PlanetPresetDef`）、surface properties 等纯数据。
+
+## Controller vs Coordinator 分工
+
+| 维度 | `PlanetController` | `PlanetSceneCoordinator` |
+|------|--------------------|--------------------------|
+| 注册位置 | `ControllerManager` | 不注册，由 `GameScene` `new()` 持有 |
+| 生命周期 | 跨场景，跟随游戏进程 | 跟随 `GameScene` 单实例 |
+| 存档参与 | `SAVE_SCOPE_SLOT`，实现 `export/import_save_data` | 不参与（无持久状态） |
+| 持有状态 | 业务数据 / model 快照 | scene 节点引用（`_scene` / `_map_view` / `_player`） |
+| 调用入口 | `ControllerManager.get_controller(PlanetController.CONTROLLER_ID)` | `GameScene.on_scene_enter` 内部 `new()` 后 `setup` |
+
+## 依赖方向
+
+推荐方向：
+
+`UI -> PlanetController -> PlanetSaveData / PlanetPresetCatalog -> map module`
+`GameScene -> PlanetSceneCoordinator -> PlanetController + UIManager + SceneManager + AchievementController`
+
+允许：
+
+- `planet/core/PlanetController` 依赖 `assets/src/game/map/**`，编排地图 chunk 生成、缓存、存储与渲染入口。
+- `planet/core/PlanetController` 通过 `BaseController._get_save_manager()` 取 `SaveManager`，不再自行 SceneTree 解析。
+- `planet/core/PlanetSceneCoordinator` 通过 `ControllerManager.get_controller(...)` 取其它 Controller，通过 `UIManager` / `SceneManager` 编排 UI 与场景切换。
+- `planet/model` 只做数据、快照和序列化。
+
+禁止：
+
+- `planet/model` 持有 SceneTree、Node、Controller 或 UI。
+- `planet/core/PlanetController` 直接写具体地图渲染节点；地图显示放 `assets/src/game/map/view`。
+- 把 `PlanetSceneCoordinator` 注册进 `ControllerManager`；它持有 scene 内节点引用，跨场景常驻会变成悬空引用。
+- `PlanetSceneCoordinator` 自行调用 `SaveManager` / `SaveRepository`；存档相关入口走 `PlanetController` / `SaveController`。
+- `planet` 模块承载 terrain/tile/transition 细节；这些属于 `map` 或 `core/terrain-trans`。
+- 继续使用旧版“世界”命名表示正式游戏模块。
+
+## 存档与常量
+
+- 进入星球的常量（chunk_size / tile_size 默认值）唯一来源是 `MapChunkGenerator.DEFAULT_CHUNK_SIZE` / `DEFAULT_TILE_SIZE`；`PlanetController` 与 `PlanetSaveData` 都直接引用，不再各自声明同名常量。
+- `PlanetSaveData` 的序列化辅助走 `assets/src/core/utils/SerializeUtils.gd`，不在 model 内复制私有 `_parse_*` / `_*_to_array` 方法。

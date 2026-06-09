@@ -1,0 +1,37 @@
+---
+description: assets/src/ui 模块 Controller 的 region 组织与对外接口约定
+globs: assets/src/ui/**/core/*Controller.gd
+alwaysApply: false
+owner: client-ui
+status: active
+last_updated: 2026-05-13
+version: 1.0.0
+---
+
+# UI Controller 脚本 Region 编码风格
+
+## 推荐 Region 顺序
+
+1. `#region 配置与常量`
+2. `#region 信号-<用途>`
+3. `#region 状态`
+4. `#region 对外接口 - 标识`
+5. `#region 对外接口 - 生命周期`
+6. `#region 对外接口 - <模块能力>`
+7. `#region 内部实现`
+
+不是每个 Controller 都需要所有区块，但已有区块顺序应保持稳定。
+
+## 对外接口约定
+
+- `get_id()` 返回稳定的 `CONTROLLER_ID`。
+- 参与存档的 Controller 实现 `get_save_scope()`、`export_save_data()`、`import_save_data()`。
+- 给 View 使用的方法放在 `对外接口` 区块，不把 View 交互流程写进内部实现后再让 View 依赖私有方法。
+- 面向 View 的状态变化优先通过 signal 通知。
+
+## 内部实现约定
+
+- 私有方法使用 `_` 前缀。
+- 跨模块访问优先通过 `ControllerManager` 获取目标 Controller。
+- Controller 可以编排流程，但不要直接持有 View 节点。
+- 模块工具方法优先放在本模块 `core/*Helper.gd`。

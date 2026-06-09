@@ -1,0 +1,78 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/planethud/view/PlanetSystemMenuPopLayer.gd" id="1_system_menu"]
+
+[node name="PlanetSystemMenuPopLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_system_menu")
+close_button_path = NodePath("Mask/Panel/Content/CloseButton")
+return_main_menu_button_path = NodePath("Mask/Panel/Content/ReturnMainMenuButton")
+save_button_path = NodePath("Mask/Panel/Content/SaveButton")
+reload_button_path = NodePath("Mask/Panel/Content/ReloadButton")
+debug_button_path = NodePath("Mask/Panel/Content/DebugButton")
+
+[node name="Mask" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.45)
+
+[node name="Panel" type="PanelContainer" parent="Mask"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -150.0
+offset_right = 180.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Mask/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Mask/Panel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "系统菜单"
+horizontal_alignment = 1
+
+[node name="ReturnMainMenuButton" type="Button" parent="Mask/Panel/Content"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+text = "返回主菜单"
+
+[node name="SaveButton" type="Button" parent="Mask/Panel/Content"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+disabled = true
+text = "保存存档（预留）"
+
+[node name="ReloadButton" type="Button" parent="Mask/Panel/Content"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+disabled = true
+text = "重新载入存档（预留）"
+
+[node name="DebugButton" type="Button" parent="Mask/Panel/Content"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+text = "调试面板"
+
+[node name="CloseButton" type="Button" parent="Mask/Panel/Content"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+text = "继续游戏"

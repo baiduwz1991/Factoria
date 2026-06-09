@@ -1,0 +1,7 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+assets/dev-only/factorio-reference/
+.codex_tmp/
+/factorio/
+/Untitled

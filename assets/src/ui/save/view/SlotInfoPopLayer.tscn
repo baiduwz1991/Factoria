@@ -1,0 +1,101 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/save/view/SlotInfoPopLayer.gd" id="1_slot_info"]
+
+[node name="SlotInfoPopLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_slot_info")
+title_label_path = NodePath("Mask/Panel/Content/TitleLabel")
+latest_entry_button_path = NodePath("Mask/Panel/Content/LatestEntryButton")
+backup_hint_label_path = NodePath("Mask/Panel/Content/BackupHintLabel")
+backup_1_button_path = NodePath("Mask/Panel/Content/Backup1Button")
+backup_2_button_path = NodePath("Mask/Panel/Content/Backup2Button")
+backup_3_button_path = NodePath("Mask/Panel/Content/Backup3Button")
+close_button_path = NodePath("Mask/Panel/Content/ActionRow/CloseButton")
+delete_button_path = NodePath("Mask/Panel/Content/ActionRow/DeleteButton")
+
+[node name="Mask" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="Panel" type="PanelContainer" parent="Mask"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -220.0
+offset_right = 260.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Mask/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Mask/Panel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "槽位详情"
+horizontal_alignment = 1
+
+[node name="LatestEntryButton" type="Button" parent="Mask/Panel/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 90)
+text = "最新存档\n无"
+autowrap_mode = 3
+
+[node name="BackupHintLabel" type="Label" parent="Mask/Panel/Content"]
+layout_mode = 2
+text = "备份存档"
+
+[node name="Backup1Button" type="Button" parent="Mask/Panel/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 90)
+text = "备份1\n无"
+autowrap_mode = 3
+
+[node name="Backup2Button" type="Button" parent="Mask/Panel/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 90)
+text = "备份2\n无"
+autowrap_mode = 3
+
+[node name="Backup3Button" type="Button" parent="Mask/Panel/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 90)
+text = "备份3\n无"
+autowrap_mode = 3
+
+[node name="ActionRow" type="HBoxContainer" parent="Mask/Panel/Content"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="CloseButton" type="Button" parent="Mask/Panel/Content/ActionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 48)
+text = "关闭"
+
+[node name="DeleteButton" type="Button" parent="Mask/Panel/Content/ActionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 48)
+text = "删除存档"

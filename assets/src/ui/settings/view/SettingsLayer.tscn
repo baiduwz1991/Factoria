@@ -1,0 +1,102 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/settings/view/SettingsLayer.gd" id="1_settings"]
+
+[node name="SettingsLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_settings")
+title_label_path = NodePath("SafeArea/ContentPanel/ContentBox/TitleLabel")
+mode_option_path = NodePath("SafeArea/ContentPanel/ContentBox/ModeRow/WindowModeOption")
+resolution_option_path = NodePath("SafeArea/ContentPanel/ContentBox/ResolutionRow/ResolutionOption")
+apply_button_path = NodePath("SafeArea/ContentPanel/ContentBox/ActionRow/ApplyButton")
+back_button_path = NodePath("SafeArea/ContentPanel/ContentBox/ActionRow/BackButton")
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="SafeArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0627451, 0.0784314, 0.109804, 1)
+
+[node name="ContentPanel" type="PanelContainer" parent="SafeArea"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -220.0
+offset_right = 320.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ContentBox" type="VBoxContainer" parent="SafeArea/ContentPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="SafeArea/ContentPanel/ContentBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "显示设置"
+horizontal_alignment = 1
+
+[node name="ModeRow" type="HBoxContainer" parent="SafeArea/ContentPanel/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ModeLabel" type="Label" parent="SafeArea/ContentPanel/ContentBox/ModeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "窗口模式"
+
+[node name="WindowModeOption" type="OptionButton" parent="SafeArea/ContentPanel/ContentBox/ModeRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 44)
+
+[node name="ResolutionRow" type="HBoxContainer" parent="SafeArea/ContentPanel/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ResolutionLabel" type="Label" parent="SafeArea/ContentPanel/ContentBox/ResolutionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "分辨率"
+
+[node name="ResolutionOption" type="OptionButton" parent="SafeArea/ContentPanel/ContentBox/ResolutionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 44)
+
+[node name="ActionRow" type="HBoxContainer" parent="SafeArea/ContentPanel/ContentBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="ApplyButton" type="Button" parent="SafeArea/ContentPanel/ContentBox/ActionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 56)
+text = "应用"
+
+[node name="BackButton" type="Button" parent="SafeArea/ContentPanel/ContentBox/ActionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 56)
+text = "返回"

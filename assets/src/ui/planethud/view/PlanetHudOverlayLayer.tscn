@@ -1,0 +1,144 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/planethud/view/PlanetHudOverlayLayer.gd" id="1_planet_hud"]
+
+[node name="PlanetHudOverlayLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_planet_hud")
+objective_label_path = NodePath("RightTopPanel/Content/ObjectiveLabel")
+minimap_button_path = NodePath("RightTopPanel/Content/MinimapButton")
+world_time_label_path = NodePath("RightTopPanel/Content/WorldTimeLabel")
+build_tool_button_path = NodePath("RightTopPanel/Content/ToolButtons/BuildToolButton")
+dismantle_tool_button_path = NodePath("RightTopPanel/Content/ToolButtons/DismantleToolButton")
+inventory_button_path = NodePath("BottomBar/Content/InventoryButton")
+quick_slots_container_path = NodePath("BottomBar/Content/QuickSlots")
+quick_actions_container_path = NodePath("BottomBar/Content/QuickActions")
+
+[node name="RightTopPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -276.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 288.0
+grow_horizontal = 0
+
+[node name="Content" type="VBoxContainer" parent="RightTopPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ObjectiveLabel" type="Label" parent="RightTopPanel/Content"]
+layout_mode = 2
+text = "目标：建立第一条自动化产线"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="MinimapButton" type="Button" parent="RightTopPanel/Content"]
+custom_minimum_size = Vector2(240, 132)
+layout_mode = 2
+text = "小地图"
+
+[node name="WorldTimeLabel" type="Label" parent="RightTopPanel/Content"]
+custom_minimum_size = Vector2(240, 24)
+layout_mode = 2
+text = "时间：第 1 天 08:00"
+horizontal_alignment = 1
+
+[node name="ToolButtons" type="HBoxContainer" parent="RightTopPanel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BuildToolButton" type="Button" parent="RightTopPanel/Content/ToolButtons"]
+custom_minimum_size = Vector2(116, 36)
+layout_mode = 2
+text = "建造"
+
+[node name="DismantleToolButton" type="Button" parent="RightTopPanel/Content/ToolButtons"]
+custom_minimum_size = Vector2(116, 36)
+layout_mode = 2
+text = "拆除"
+
+[node name="BottomBar" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -392.0
+offset_top = -92.0
+offset_right = 392.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Content" type="HBoxContainer" parent="BottomBar"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="InventoryButton" type="Button" parent="BottomBar/Content"]
+custom_minimum_size = Vector2(96, 56)
+layout_mode = 2
+text = "物品栏"
+
+[node name="QuickSlots" type="HBoxContainer" parent="BottomBar/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Slot1" type="Button" parent="BottomBar/Content/QuickSlots"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+text = "1"
+
+[node name="Slot2" type="Button" parent="BottomBar/Content/QuickSlots"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+text = "2"
+
+[node name="Slot3" type="Button" parent="BottomBar/Content/QuickSlots"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+text = "3"
+
+[node name="Slot4" type="Button" parent="BottomBar/Content/QuickSlots"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+text = "4"
+
+[node name="Slot5" type="Button" parent="BottomBar/Content/QuickSlots"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+text = "5"
+
+[node name="Slot6" type="Button" parent="BottomBar/Content/QuickSlots"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+text = "6"
+
+[node name="QuickActions" type="HBoxContainer" parent="BottomBar/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="RotateAction" type="Button" parent="BottomBar/Content/QuickActions"]
+custom_minimum_size = Vector2(64, 52)
+layout_mode = 2
+text = "旋转"
+
+[node name="CopyAction" type="Button" parent="BottomBar/Content/QuickActions"]
+custom_minimum_size = Vector2(64, 52)
+layout_mode = 2
+text = "复制"
+
+[node name="DeleteAction" type="Button" parent="BottomBar/Content/QuickActions"]
+custom_minimum_size = Vector2(64, 52)
+layout_mode = 2
+text = "删除"

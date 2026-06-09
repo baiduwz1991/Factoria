@@ -1,0 +1,36 @@
+---
+description: assets/src/ui 模块 Model 的 region 组织、写入方式与快照约定
+globs: assets/src/ui/**/model/*.gd
+alwaysApply: false
+owner: client-ui
+status: active
+last_updated: 2026-05-13
+version: 1.0.0
+---
+
+# UI Model 脚本 Region 编码风格
+
+## 推荐 Region 顺序
+
+1. `#region 配置与常量`
+2. `#region 状态`
+3. `#region 对外只读`
+4. `#region 应用与重置`
+5. `#region 序列化`
+6. `#region 内部解析`
+
+按需保留区块；不要为了凑齐区块制造空代码。
+
+## 状态写入
+
+- Model 状态字段默认私有，使用 `_` 前缀。
+- 对外读取使用 getter 或 `get_runtime_snapshot()`。
+- 外部写入优先通过 `apply_*`、`clear()`、`reset()` 等明确入口。
+- 解析输入 Dictionary 时使用 `_pick_*` 私有方法集中处理默认值和类型转换。
+
+## 禁止事项
+
+- 不引用 UI 节点。
+- 不调用 `UIManager`、`ControllerManager`、`SaveManager`。
+- 不处理按钮点击、页面跳转、弹窗打开等界面流程。
+- 不承载跨模块业务编排。

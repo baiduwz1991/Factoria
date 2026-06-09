@@ -1,0 +1,35 @@
+---
+description: FACTORIA SceneManager、SceneRegistry 与 gameplay 场景生命周期约定
+globs: assets/src/{core/scene-manager,game/scene}/**/*.{gd,tscn}
+alwaysApply: false
+owner: gameplay
+status: active
+last_updated: 2026-05-13
+version: 1.0.0
+---
+
+# SceneManager 约定
+
+## 职责边界
+
+- `SceneManager` 只管理 gameplay scene，不打开 UI 页面、弹窗或面板。
+- `SceneRegistry` 只登记 gameplay scene 的 `scene_id -> scene_path`。
+- UI 页面仍由 `UIManager` 与 `UIRegistry` 管理。
+
+## 层级约定
+
+`SceneManager` 必须在 `project.godot` 的 Autoload 中排在 `UIManager` 之前。
+
+这样 `SceneRoot` 先于 `UIRoot` 加入场景树，gameplay 场景位于 UI 下方。
+
+## 生命周期
+
+Gameplay scene 可按需实现以下方法，由 `SceneManager` 约定派发：
+
+- `on_scene_enter(params: Dictionary)`
+- `on_scene_show()`
+- `on_scene_hide()`
+- `on_scene_exit()`
+- `on_scene_destroy()`
+
+禁止通过 `UIManager.open_ui(...)` 打开 gameplay scene。

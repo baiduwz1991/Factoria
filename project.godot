@@ -1,0 +1,38 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="factoria"
+run/main_scene="res://assets/src/core/ui-manager/UIBootstrap.tscn"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+CSharpRuntimeManager="*res://assets/src/core/csharp-manager/CSharpRuntimeManager.tscn"
+ControllerManager="*res://assets/src/core/ui-controller-manager/ControllerManager.gd"
+SaveManager="*res://assets/src/core/save-manager/SaveManager.gd"
+SceneManager="*res://assets/src/core/scene-manager/SceneManager.gd"
+UIManager="*res://assets/src/core/ui-manager/UIManager.gd"
+
+[dotnet]
+
+project/assembly_name="factoria"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

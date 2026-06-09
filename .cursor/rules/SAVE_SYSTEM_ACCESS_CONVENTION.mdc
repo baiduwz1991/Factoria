@@ -1,0 +1,59 @@
+---
+description: FACTORIA 存档系统的访问边界、slot/profile/local config 语义与模块调用方向
+globs: assets/src/{core/save-manager,ui/save,ui/**/core,game/**/core}/*.gd
+alwaysApply: false
+owner: client-ui
+status: active
+last_updated: 2026-05-13
+version: 1.1.0
+---
+
+# 存档系统访问约定
+
+## 适用目录
+
+- `assets/src/core/save-manager/*.gd`
+- `assets/src/ui/save/**`
+- `assets/src/ui/**/core/*Controller.gd` 中参与存档的 Controller
+- `assets/src/game/**/core/*Controller.gd` 中参与存档的 Controller
+
+## 分层边界
+
+- `SaveManager`：存档流程编排、阶段通知、Controller 调度。
+- `SaveRepository`：文件读写与备份文件管理，不承载业务决策。
+- `SaveJsonCodec` / `SaveBinaryCodec`：编码解码。
+- `SaveController`：UI 模块对存档系统的入口，负责槽位交互、进度状态和 View 通知。
+- 业务 Controller：通过 `BaseController` 的存档接口导入导出本模块数据。
+
+## 调用方向
+
+推荐方向：
+
+`View -> SaveController -> SaveManager -> SaveRepository`
+
+业务模块参与存档时：
+
+`SaveManager -> ControllerManager -> 业务 Controller`
+
+## slot / profile / local config 语义
+
+- `slot`：具体存档槽位下的玩法数据。
+- `profile`：跨槽位的玩家长期进度，例如成就、累计统计、全局解锁。
+- `local config/cache`：本机运行偏好与缓存，例如分辨率、音量、语言、按键、UI 缩放；不进入 `SaveManager`。
+- 参与存档系统的 Controller 必须通过 `get_save_scope()` 明确声明范围。
+- 不跨域写入：`slot` 数据不要写入 `profile`，`profile` 数据不要混入具体槽位。
+- 系统设置 Controller 应保持 `SAVE_SCOPE_NONE`，自行通过 `ConfigFile` 或本地配置仓库读写 `user://config` / `user://*.cfg`。
+
+## 典型归属
+
+- `SAVE_SCOPE_SLOT`：角色、地图、工厂实体、库存、科技、蓝图实例。
+- `SAVE_SCOPE_PROFILE`：成就、累计统计、全局教程状态、跨槽位解锁。
+- `SAVE_SCOPE_NONE` + 本地配置：显示设置、音频设置、语言、按键、图形质量。
+
+## 禁止事项
+
+- View 直接拼接 `user://saves/...` 路径。
+- View 直接做 JSON decode、备份选择或存档阶段编排。
+- 业务 Controller 自行绕过 `SaveManager` 写磁盘。
+- 把系统设置写入 slot 或 profile 存档。
+- 把“读取指定备份”写成“主档失败才回退”的单一路径，导致无法明确选择加载来源。
