@@ -161,6 +161,14 @@
 			background: var(--panel);
 			color: var(--muted);
 		}
+		ul {
+			margin: 12px 0 0;
+			padding-left: 22px;
+			color: var(--muted);
+		}
+		li {
+			margin: 5px 0;
+		}
 		.grid {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -214,6 +222,7 @@
 				<button type="button" data-lang-button="en" aria-pressed="false">English</button>
 			</div>
 			<a href="#overview"><span data-lang-inline="en">Overview</span><span data-lang-inline="zh">概览</span></a>
+			<a href="#mod-first"><span data-lang-inline="en">Mod-first Workflow</span><span data-lang-inline="zh">Mod-first 工作流</span></a>
 			<a href="#folder"><span data-lang-inline="en">Folder Layout</span><span data-lang-inline="zh">目录结构</span></a>
 			<a href="#loading"><span data-lang-inline="en">Loading Rules</span><span data-lang-inline="zh">加载规则</span></a>
 			<a href="#manifest"><span data-lang-inline="en">Manifest</span><span data-lang-inline="zh">Manifest</span></a>
@@ -236,6 +245,71 @@
 					<h2>概览</h2>
 					<p>Factoria Mod API 0.1 支持本地松散文件夹形式的数据/资源型 mod。mod 可以新增或整条替换地形定义、地形视觉、地形自动生成规则和星球预设。API 0.1 暂不支持脚本 mod。</p>
 					<div class="callout">游戏本体负责运行时逻辑。内置内容会作为永远启用的 <code>core</code> mod 加载，玩家 mod 总是在 <code>core</code> 之后加载。</div>
+				</div>
+			</section>
+
+			<section id="mod-first">
+				<div data-lang-content="en">
+					<h2>Mod-first Workflow</h2>
+					<p>New content ideas should usually start as an experiment mod. This keeps data iteration fast and forces the engine API to stay honest about what it can support.</p>
+					<table>
+						<tr><th>Step</th><th>Decision</th></tr>
+						<tr><td>Experiment</td><td>Create the idea under <code>user://mods/my_experiment_mod</code>.</td></tr>
+						<tr><td>Iterate</td><td>Use the manifest, JSON data files, and resource images/audio/icons.</td></tr>
+						<tr><td>Ship</td><td>If it works as optional content, release it as an independent official mod.</td></tr>
+						<tr><td>Promote</td><td>If it should become default content, merge it into <code>assets/data/core</code>.</td></tr>
+						<tr><td>Extend</td><td>If the mod exposes a missing system capability, extend the base game API instead of hard-coding the content.</td></tr>
+					</table>
+					<h3>Good mod-first domains</h3>
+					<ul>
+						<li>Terrain and planet presets</li>
+						<li>Resource distribution</li>
+						<li>Items, recipes, building parameters, and tech tree data</li>
+						<li>Decorations</li>
+						<li>Audio, textures, and icons</li>
+						<li>Future quest and story data</li>
+					</ul>
+					<h3>Do not force mod-first</h3>
+					<ul>
+						<li>Chunk streaming algorithms</li>
+						<li>Core save format logic</li>
+						<li>The C# terrain rendering algorithm itself</li>
+						<li>Controller lifecycle</li>
+						<li><code>UIManager</code> and <code>SceneManager</code></li>
+						<li>Performance-critical simulation kernels</li>
+						<li>Network synchronization rules, if multiplayer is added later</li>
+					</ul>
+				</div>
+				<div data-lang-content="zh">
+					<h2>Mod-first 工作流</h2>
+					<p>新的内容想法通常应先作为实验 mod 开始。这样内容迭代会更快，也能反过来检验本体 API 是否足够表达这些设计。</p>
+					<table>
+						<tr><th>阶段</th><th>决策</th></tr>
+						<tr><td>实验</td><td>新想法先做成 <code>user://mods/my_experiment_mod</code>。</td></tr>
+						<tr><td>迭代</td><td>使用 manifest、JSON 数据文件和资源图片/音频/图标快速调整。</td></tr>
+						<tr><td>发布</td><td>满意后，如果它适合作为可选内容，就作为独立官方 mod 发给玩家。</td></tr>
+						<tr><td>转正</td><td>如果它应该成为默认官方内容，就合并进 <code>assets/data/core</code>。</td></tr>
+						<tr><td>扩展</td><td>如果某个 mod 暴露出当前系统能力不够，应扩展本体 API，而不是把内容硬塞进代码。</td></tr>
+					</table>
+					<h3>适合 mod-first 的内容</h3>
+					<ul>
+						<li>地形和星球预设</li>
+						<li>资源分布</li>
+						<li>物品、配方、建筑参数和科技树</li>
+						<li>装饰物</li>
+						<li>音效、贴图和图标</li>
+						<li>后续任务/剧情数据</li>
+					</ul>
+					<h3>不适合直接 mod-first 的内容</h3>
+					<ul>
+						<li>区块流送算法</li>
+						<li>存档格式核心逻辑</li>
+						<li>C# 地形渲染算法本身</li>
+						<li>Controller 生命周期</li>
+						<li><code>UIManager</code> / <code>SceneManager</code></li>
+						<li>性能关键模拟内核</li>
+						<li>网络同步规则，如果以后做多人</li>
+					</ul>
 				</div>
 			</section>
 
