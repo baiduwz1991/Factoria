@@ -36,6 +36,10 @@ func _register_default_visual_terrains() -> void:
 	_visual_by_terrain_id[TerrainCatalog.TERRAIN_SAND] = &"sand"
 	_visual_by_terrain_id[TerrainCatalog.TERRAIN_WATER] = &"water"
 	_visual_by_terrain_id[TerrainCatalog.TERRAIN_DEEP_WATER] = &"deep_water"
+	_visual_by_terrain_id[TerrainCatalog.TERRAIN_DRY_GRASS] = &"dry_grass"
+	_visual_by_terrain_id[TerrainCatalog.TERRAIN_DRY_DIRT] = &"dry_dirt"
+	_visual_by_terrain_id[TerrainCatalog.TERRAIN_RED_DESERT] = &"red_desert"
+	_visual_by_terrain_id[TerrainCatalog.TERRAIN_STONE_GROUND] = &"stone_ground"
 
 
 func _register_default_sheets() -> void:
@@ -45,6 +49,10 @@ func _register_default_sheets() -> void:
 	_register_base_sheet(&"sand")
 	_register_base_sheet(&"water")
 	_register_base_sheet(&"deep_water")
+	_register_base_sheet(&"dry_grass")
+	_register_base_sheet(&"dry_dirt")
+	_register_base_sheet(&"red_desert")
+	_register_base_sheet(&"stone_ground")
 
 
 func _register_base_sheet(visual: StringName) -> void:

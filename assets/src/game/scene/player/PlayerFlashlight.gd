@@ -91,14 +91,14 @@ func _build_cone_texture() -> Texture2D:
 	var half_angle: float = deg_to_rad(cone_angle_degrees) * 0.5
 	var edge_softness: float = maxf(deg_to_rad(edge_softness_degrees), 0.001)
 
-	for y in size:
-		for x in size:
-			var offset: Vector2 = Vector2(float(x), float(y)) - center
-			var distance: float = offset.length()
+	for y in range(size):
+		for x in range(size):
+			var sample_offset: Vector2 = Vector2(float(x), float(y)) - center
+			var distance: float = sample_offset.length()
 			if distance > radius or distance <= 0.001:
 				continue
 
-			var angle: float = absf(wrapf(atan2(offset.y, offset.x), -PI, PI))
+			var angle: float = absf(wrapf(atan2(sample_offset.y, sample_offset.x), -PI, PI))
 			if angle > half_angle:
 				continue
 

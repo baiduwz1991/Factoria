@@ -13,6 +13,10 @@ runtime and atlas-backed chunk canvas nodes.
   - `sand`
   - `water`
   - `deep_water`
+  - `dry_grass`
+  - `dry_dirt`
+  - `red_desert`
+  - `stone_ground`
 - `base_soil` is the default terrain and the landfill target.
 
 ## Rendering

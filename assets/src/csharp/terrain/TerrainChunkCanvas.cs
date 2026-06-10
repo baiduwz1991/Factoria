@@ -118,7 +118,7 @@ public partial class TerrainChunkCanvas : Node2D
         DrawBaseTiles();
         DrawBasePatchCommands();
         DrawCommands(_overlayCommands, GetOverlayTextureForDraw);
-        DrawCommands(_shoreCommands, GetShoreCombinedTextureForDraw);
+        DrawShoreCommands();
         DrawCommands(_foamCommands, _ => WaterFoamTexture);
     }
 
@@ -162,6 +162,35 @@ public partial class TerrainChunkCanvas : Node2D
                 continue;
 
             DrawTextureRegion(texture, localX, localY, mask, cycle);
+        }
+    }
+
+    private void DrawShoreCommands()
+    {
+        for (int index = 0; index + CommandStride - 1 < _shoreCommands.Length; index += CommandStride)
+        {
+            int localX = _shoreCommands[index];
+            int localY = _shoreCommands[index + 1];
+            int visual = _shoreCommands[index + 2];
+            int mask = _shoreCommands[index + 3];
+            int cycle = _shoreCommands[index + 4];
+            if (mask <= 0 || mask >= 15)
+                continue;
+
+            Texture2D combinedTexture = GetShoreCombinedTextureForDraw(visual);
+            if (combinedTexture != null)
+            {
+                DrawTextureRegion(combinedTexture, localX, localY, mask, cycle);
+                continue;
+            }
+
+            Texture2D shadowTexture = GetShoreShadowTextureForDraw(visual);
+            if (shadowTexture != null)
+                DrawTextureRegion(shadowTexture, localX, localY, mask, cycle);
+
+            Texture2D shoreTexture = GetShoreTextureForDraw(visual);
+            if (shoreTexture != null)
+                DrawTextureRegion(shoreTexture, localX, localY, mask, cycle);
         }
     }
 
@@ -353,9 +382,7 @@ public partial class TerrainChunkCanvas : Node2D
     private Texture2D GetShoreCombinedTextureForDraw(int visual)
     {
         return GetAnimatedTexture(AnimatedShoreCombinedTextures, visual, _waterAnimationFrame)
-            ?? GetShoreCombinedTexture(visual)
-            ?? GetShoreTextureForDraw(visual)
-            ?? GetShoreShadowTextureForDraw(visual);
+            ?? GetShoreCombinedTexture(visual);
     }
 
     private static Texture2D GetAnimatedTexture(Dictionary<int, Texture2D[]> textures, int visual, int frame)
@@ -405,11 +432,14 @@ public partial class TerrainChunkCanvas : Node2D
         if (string.IsNullOrEmpty(path))
             return null;
 
-        Texture2D texture = GD.Load<Texture2D>(path);
-        if (texture != null)
-            return texture;
+        if (CanLoadAsGodotResource(path))
+        {
+            Texture2D texture = GD.Load<Texture2D>(path);
+            if (texture != null)
+                return texture;
+        }
 
-        Image image = Image.LoadFromFile(path);
+        Image image = Image.LoadFromFile(GetImageFilePath(path));
         if (image != null && !image.IsEmpty())
             return ImageTexture.CreateFromImage(image);
 
@@ -418,6 +448,18 @@ public partial class TerrainChunkCanvas : Node2D
         else
             GD.PushWarning($"Terrain texture missing: {path}");
         return null;
+    }
+
+    private static bool CanLoadAsGodotResource(string path)
+    {
+        return path.StartsWith("res://");
+    }
+
+    private static string GetImageFilePath(string path)
+    {
+        return path.StartsWith("res://") || path.StartsWith("user://")
+            ? ProjectSettings.GlobalizePath(path)
+            : path;
     }
 
     private static Texture2D[] LoadTextureFrames(string pathFormat)

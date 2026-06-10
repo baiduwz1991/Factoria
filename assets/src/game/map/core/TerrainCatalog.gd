@@ -7,6 +7,10 @@ const TERRAIN_GRASS: int = 3
 const TERRAIN_SAND: int = 4
 const TERRAIN_WATER: int = 5
 const TERRAIN_DEEP_WATER: int = 6
+const TERRAIN_DRY_GRASS: int = 7
+const TERRAIN_DRY_DIRT: int = 8
+const TERRAIN_RED_DESERT: int = 9
+const TERRAIN_STONE_GROUND: int = 10
 
 const ID_BASE_SOIL: StringName = &"core.base_soil"
 const ID_DIRT: StringName = &"core.dirt"
@@ -14,6 +18,10 @@ const ID_GRASS: StringName = &"core.grass"
 const ID_SAND: StringName = &"core.sand"
 const ID_WATER: StringName = &"core.water"
 const ID_DEEP_WATER: StringName = &"core.deep_water"
+const ID_DRY_GRASS: StringName = &"core.dry_grass"
+const ID_DRY_DIRT: StringName = &"core.dry_dirt"
+const ID_RED_DESERT: StringName = &"core.red_desert"
+const ID_STONE_GROUND: StringName = &"core.stone_ground"
 
 const MODDED_RUNTIME_ID_START: int = 1000
 
@@ -252,6 +260,10 @@ func _register_default_terrains() -> void:
 	_register(_build_default_terrain(TERRAIN_SAND, ID_SAND, "Sand", 0xcab064, true, true, false, [&"sand"]))
 	_register(_build_default_terrain(TERRAIN_WATER, ID_WATER, "Water", 0x3193ae, false, false, true, [&"water"]))
 	_register(_build_default_terrain(TERRAIN_DEEP_WATER, ID_DEEP_WATER, "Deep Water", 0x185584, false, false, true, [&"deep_water"]))
+	_register(_build_default_terrain(TERRAIN_DRY_GRASS, ID_DRY_GRASS, "Dry Grass", 0x6f7439, true, true, false, [&"dry_grass"]))
+	_register(_build_default_terrain(TERRAIN_DRY_DIRT, ID_DRY_DIRT, "Dry Dirt", 0x7b4f32, true, true, false, [&"dry_dirt", &"dry_soil"]))
+	_register(_build_default_terrain(TERRAIN_RED_DESERT, ID_RED_DESERT, "Red Desert", 0x9c552f, true, true, false, [&"red_desert", &"rust_desert"]))
+	_register(_build_default_terrain(TERRAIN_STONE_GROUND, ID_STONE_GROUND, "Stone Ground", 0x62605a, true, true, false, [&"stone_ground", &"gravel"]))
 
 
 func _build_default_terrain(
@@ -324,10 +336,18 @@ func _get_default_priority(terrain: TerrainDef) -> int:
 		return 0
 	if terrain.is_water:
 		return 50 if terrain.id == ID_DEEP_WATER else 40
+	if terrain.id == ID_STONE_GROUND:
+		return 35
+	if terrain.id == ID_RED_DESERT:
+		return 32
 	if terrain.id == ID_SAND:
 		return 30
 	if terrain.id == ID_GRASS:
 		return 20
+	if terrain.id == ID_DRY_GRASS:
+		return 18
+	if terrain.id == ID_DRY_DIRT:
+		return 12
 	if terrain.id == ID_DIRT:
 		return 10
 	return 0

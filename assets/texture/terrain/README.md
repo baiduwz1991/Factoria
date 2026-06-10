@@ -46,6 +46,13 @@ assets/texture/terrain/
     base/2x2/2x2.png
     base/4x4/4x4.png
     overlay/dual16.png
+  dry_grass/, dry_dirt/, red_desert/, stone_ground/
+    base/1x1.png
+    base/2x2/2x2.png
+    base/4x4/4x4.png
+    overlay/dual16.png
+    shore/water_shadow_dual16.png
+    shore/water_dual16.png
 ```
 
 Only runtime-loaded terrain atlases belong in this tree. Generated previews,
@@ -83,9 +90,15 @@ mask references, and other visual debugging artifacts should stay under
   `x/y` are global visual-cell coordinates and patch origins are aligned to the
   patch size. Patches are only drawn over pure cells, never mixed terrain
   boundaries.
+- `1x1`, `2x2`, and `4x4` variants should follow the sand terrain's proven
+  rule: rich granular material detail, close average brightness and texture
+  density between variants, and no center-detail/edge-blend patch structure.
+  Stronger pits, clumps, and stone beds may be present only when they dissolve
+  into surrounding material and still read as part of the same continuous field.
 - `2x2` and `4x4` patch edges must visually reconnect to the same terrain's
   `1x1` cycle and must also be edge-compatible across their horizontal atlas
-  row. Keep strong unique details inside the patch interior.
+  row. Keep unique details organic and low enough that a repeated patch does
+  not become a visible puzzle piece when zoomed out.
 - Runtime world tiles remain 32 world units. The 64 px source regions are drawn
   into 32 world-unit destinations, preserving close-view detail without changing
   gameplay coordinates or save data.

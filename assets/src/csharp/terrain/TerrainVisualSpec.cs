@@ -97,6 +97,66 @@ public sealed class TerrainVisualSpec
             )
         ));
         AddDefinition(byTerrainId, byVisualIndex, new TerrainVisualDefinition(
+            7,
+            7,
+            "core.dry_grass",
+            18,
+            false,
+            TerrainVisualTextureSpec.Create(
+                "res://assets/texture/terrain/dry_grass/base/1x1.png",
+                "res://assets/texture/terrain/dry_grass/base/2x2/2x2.png",
+                "res://assets/texture/terrain/dry_grass/base/4x4/4x4.png",
+                "res://assets/texture/terrain/dry_grass/overlay/dual16.png",
+                "res://assets/texture/terrain/dry_grass/shore/water_shadow_dual16.png",
+                "res://assets/texture/terrain/dry_grass/shore/water_dual16.png"
+            )
+        ));
+        AddDefinition(byTerrainId, byVisualIndex, new TerrainVisualDefinition(
+            8,
+            8,
+            "core.dry_dirt",
+            12,
+            false,
+            TerrainVisualTextureSpec.Create(
+                "res://assets/texture/terrain/dry_dirt/base/1x1.png",
+                "res://assets/texture/terrain/dry_dirt/base/2x2/2x2.png",
+                "res://assets/texture/terrain/dry_dirt/base/4x4/4x4.png",
+                "res://assets/texture/terrain/dry_dirt/overlay/dual16.png",
+                "res://assets/texture/terrain/dry_dirt/shore/water_shadow_dual16.png",
+                "res://assets/texture/terrain/dry_dirt/shore/water_dual16.png"
+            )
+        ));
+        AddDefinition(byTerrainId, byVisualIndex, new TerrainVisualDefinition(
+            9,
+            9,
+            "core.red_desert",
+            32,
+            false,
+            TerrainVisualTextureSpec.Create(
+                "res://assets/texture/terrain/red_desert/base/1x1.png",
+                "res://assets/texture/terrain/red_desert/base/2x2/2x2.png",
+                "res://assets/texture/terrain/red_desert/base/4x4/4x4.png",
+                "res://assets/texture/terrain/red_desert/overlay/dual16.png",
+                "res://assets/texture/terrain/red_desert/shore/water_shadow_dual16.png",
+                "res://assets/texture/terrain/red_desert/shore/water_dual16.png"
+            )
+        ));
+        AddDefinition(byTerrainId, byVisualIndex, new TerrainVisualDefinition(
+            10,
+            10,
+            "core.stone_ground",
+            35,
+            false,
+            TerrainVisualTextureSpec.Create(
+                "res://assets/texture/terrain/stone_ground/base/1x1.png",
+                "res://assets/texture/terrain/stone_ground/base/2x2/2x2.png",
+                "res://assets/texture/terrain/stone_ground/base/4x4/4x4.png",
+                "res://assets/texture/terrain/stone_ground/overlay/dual16.png",
+                "res://assets/texture/terrain/stone_ground/shore/water_shadow_dual16.png",
+                "res://assets/texture/terrain/stone_ground/shore/water_dual16.png"
+            )
+        ));
+        AddDefinition(byTerrainId, byVisualIndex, new TerrainVisualDefinition(
             5,
             5,
             "core.water",
@@ -209,13 +269,6 @@ public sealed class TerrainVisualSpec
         return _byVisualIndex.TryGetValue(visualIndex, out TerrainVisualDefinition definition)
             ? definition.Textures
             : TerrainVisualTextureSpec.Empty;
-    }
-
-    public bool IsPatchFeatureVisual(int visualIndex)
-    {
-        if (!_byVisualIndex.TryGetValue(visualIndex, out TerrainVisualDefinition definition))
-            return false;
-        return definition.StableId == "core.grass" || definition.StableId.EndsWith(".grass");
     }
 
     private int GetDefaultVisualIndex()

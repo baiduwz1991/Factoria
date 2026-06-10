@@ -39,12 +39,16 @@ func _register_registry_rules(registry: GameDataRegistry) -> void:
 
 
 func _register_default_rules() -> void:
-	_register(_build_rule(TerrainCatalog.TERRAIN_DEEP_WATER, Vector2(-1.0, -0.58), Vector2(-1.0, 1.0), Vector2(-1.0, 1.0), 0.50, 2.0, 0.0, 0.0, 0.0, 0.20))
-	_register(_build_rule(TerrainCatalog.TERRAIN_WATER, Vector2(-0.62, -0.34), Vector2(-1.0, 1.0), Vector2(-1.0, 1.0), 0.42, 1.8, 0.0, 0.0, 0.0, 0.22))
-	_register(_build_rule(TerrainCatalog.TERRAIN_SAND, Vector2(-0.36, 0.20), Vector2(-1.0, 0.20), Vector2(0.00, 1.0), 0.10, 0.45, 0.75, 0.25, 0.08, 0.46))
-	_register(_build_rule(TerrainCatalog.TERRAIN_GRASS, Vector2(-0.34, 0.78), Vector2(0.08, 1.0), Vector2(-0.80, 0.72), 0.18, 0.25, 0.85, 0.20, 0.04, 0.52))
-	_register(_build_rule(TerrainCatalog.TERRAIN_DIRT, Vector2(-0.34, 1.0), Vector2(-0.55, 0.55), Vector2(-1.0, 0.88), 0.15, 0.28, 0.50, 0.10, 0.05, 0.50))
-	_register(_build_rule(TerrainCatalog.TERRAIN_BASE_SOIL, Vector2(-0.34, 1.0), Vector2(-1.0, 0.30), Vector2(-0.20, 1.0), 0.12, 0.18, 0.35, 0.18, 0.05, 0.55))
+	_register(_build_rule(TerrainCatalog.TERRAIN_DEEP_WATER, Vector2(-1.0, -0.60), Vector2(-1.0, 1.0), Vector2(-1.0, 1.0), 0.55, 2.1, 0.0, 0.0, 0.0, 0.18))
+	_register(_build_rule(TerrainCatalog.TERRAIN_WATER, Vector2(-0.64, -0.33), Vector2(-1.0, 1.0), Vector2(-1.0, 1.0), 0.45, 1.9, 0.0, 0.0, 0.0, 0.22))
+	_register(_build_rule(TerrainCatalog.TERRAIN_SAND, Vector2(-0.38, 0.16), Vector2(-1.0, 0.08), Vector2(0.05, 1.0), 0.14, 0.50, 0.70, 0.32, 0.05, 0.40))
+	_register(_build_rule(TerrainCatalog.TERRAIN_DRY_DIRT, Vector2(-0.28, 0.92), Vector2(-0.75, 0.05), Vector2(-0.65, 0.96), 0.18, 0.26, 0.74, 0.10, 0.11, 0.46))
+	_register(_build_rule(TerrainCatalog.TERRAIN_DRY_GRASS, Vector2(-0.24, 0.82), Vector2(-0.05, 0.50), Vector2(-0.55, 0.78), 0.23, 0.23, 0.66, 0.13, 0.10, 0.48))
+	_register(_build_rule(TerrainCatalog.TERRAIN_GRASS, Vector2(-0.30, 0.78), Vector2(0.30, 1.0), Vector2(-0.80, 0.68), 0.16, 0.25, 0.82, 0.20, 0.04, 0.52))
+	_register(_build_rule(TerrainCatalog.TERRAIN_RED_DESERT, Vector2(-0.12, 1.0), Vector2(-1.0, -0.30), Vector2(0.20, 1.0), 0.26, 0.22, 0.96, 0.42, 0.18, 0.50))
+	_register(_build_rule(TerrainCatalog.TERRAIN_STONE_GROUND, Vector2(0.12, 1.0), Vector2(-1.0, 0.48), Vector2(-0.85, 0.96), 0.18, 0.62, 0.36, 0.08, 0.55, 0.44))
+	_register(_build_rule(TerrainCatalog.TERRAIN_DIRT, Vector2(-0.34, 1.0), Vector2(-0.55, 0.58), Vector2(-1.0, 0.88), 0.13, 0.24, 0.44, 0.08, 0.04, 0.50))
+	_register(_build_rule(TerrainCatalog.TERRAIN_BASE_SOIL, Vector2(-0.34, 1.0), Vector2(-1.0, 0.32), Vector2(-0.20, 1.0), 0.09, 0.16, 0.32, 0.16, 0.03, 0.55))
 
 
 func _build_rule(

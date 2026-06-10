@@ -58,5 +58,45 @@
 		"walkable": false,
 		"buildable": false,
 		"is_water": true
+	},
+	{
+		"id": "core.dry_grass",
+		"aliases": ["dry_grass"],
+		"preferred_runtime_id": 7,
+		"display_name": "Dry Grass",
+		"map_color": "0x6f7439",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	},
+	{
+		"id": "core.dry_dirt",
+		"aliases": ["dry_dirt", "dry_soil"],
+		"preferred_runtime_id": 8,
+		"display_name": "Dry Dirt",
+		"map_color": "0x7b4f32",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	},
+	{
+		"id": "core.red_desert",
+		"aliases": ["red_desert", "rust_desert"],
+		"preferred_runtime_id": 9,
+		"display_name": "Red Desert",
+		"map_color": "0x9c552f",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	},
+	{
+		"id": "core.stone_ground",
+		"aliases": ["stone_ground", "gravel"],
+		"preferred_runtime_id": 10,
+		"display_name": "Stone Ground",
+		"map_color": "0x62605a",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
 	}
 ]
