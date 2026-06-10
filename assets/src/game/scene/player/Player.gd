@@ -105,28 +105,22 @@ func _update_facing(direction: Vector2) -> void:
 	var previous_facing: StringName = _facing
 	if direction.x < 0.0 and direction.y < 0.0:
 		_facing = &"up_left"
-		animated_sprite.flip_h = true
 	elif direction.x > 0.0 and direction.y < 0.0:
 		_facing = &"up_right"
-		animated_sprite.flip_h = false
 	elif direction.x < 0.0 and direction.y > 0.0:
 		_facing = &"down_left"
-		animated_sprite.flip_h = true
 	elif direction.x > 0.0 and direction.y > 0.0:
 		_facing = &"down_right"
-		animated_sprite.flip_h = false
 	elif direction.x < 0.0:
 		_facing = &"left"
-		animated_sprite.flip_h = true
 	elif direction.x > 0.0:
 		_facing = &"right"
-		animated_sprite.flip_h = false
 	elif direction.y < 0.0:
 		_facing = &"up"
-		animated_sprite.flip_h = false
 	else:
 		_facing = &"down"
-		animated_sprite.flip_h = false
+
+	animated_sprite.flip_h = false
 	if _facing != previous_facing:
 		facing_changed.emit(_facing)
 
@@ -141,6 +135,9 @@ func _set_state(state: StringName) -> void:
 
 
 func _get_animation_name(state: StringName) -> StringName:
+	if animated_sprite.sprite_frames != null and animated_sprite.sprite_frames.has_animation(state):
+		return state
+
 	var state_text: String = str(state)
 	var separator_index: int = state_text.find("_")
 	if separator_index < 0:

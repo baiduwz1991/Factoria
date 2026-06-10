@@ -21,6 +21,7 @@ public sealed class TerrainRuntime
     private const int CommandStride = 5;
     private const int NotPureVisual = -1;
     private const int WaterRectStride = 4;
+    private const float GrassPatch4FeatureChance = 0.18f;
 
     public TerrainChunkVisualData BuildChunkVisualData(
         Vector2I chunkCoord,
@@ -192,15 +193,53 @@ public sealed class TerrainRuntime
                 if (visual == NotPureVisual)
                     continue;
 
+                int variant = SelectBasePatchVariant(
+                    globalX,
+                    globalY,
+                    visual,
+                    patchSize,
+                    GetPatchVariantIndex(globalX, globalY, patchSize)
+                );
+
                 commands.Add(new PatchCommand(
                     localX,
                     localY,
                     visual,
                     patchSize,
-                    GetPatchVariantIndex(globalX, globalY, patchSize)
+                    variant
                 ));
                 MarkCovered(localX, localY, chunkSize, patchSize, covered);
             }
+        }
+    }
+
+    private static int SelectBasePatchVariant(int globalX, int globalY, int visual, int patchSize, int cycleVariant)
+    {
+        if (visual != VisualGrass || patchSize != 4)
+            return cycleVariant;
+
+        int patchX = globalX / patchSize;
+        int patchY = globalY / patchSize;
+        if (PatchNoise01(patchX, patchY, visual, patchSize) >= GrassPatch4FeatureChance)
+            return System.Math.Min(CycleSize - 1, (int)(PatchNoise01(patchX, patchY, visual, patchSize + 31) * CycleSize));
+
+        return 4 + System.Math.Min(11, (int)(PatchNoise01(patchX, patchY, visual, patchSize + 17) * 12f));
+    }
+
+    private static float PatchNoise01(int patchX, int patchY, int visual, int patchSize)
+    {
+        unchecked
+        {
+            uint value = (uint)patchX * 73856093u
+                ^ (uint)patchY * 19349663u
+                ^ (uint)visual * 83492791u
+                ^ (uint)patchSize * 2654435761u;
+            value ^= value >> 16;
+            value *= 2246822519u;
+            value ^= value >> 13;
+            value *= 3266489917u;
+            value ^= value >> 16;
+            return value / 4294967295f;
         }
     }
 
