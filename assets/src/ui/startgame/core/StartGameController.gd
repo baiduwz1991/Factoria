@@ -19,6 +19,10 @@ func request_open_settings() -> void:
 	UIManager.open_ui(UIRegistry.SETTINGS_LAYER, {}, UIManager.MODE_REPLACE)
 
 
+func request_open_mods() -> void:
+	UIManager.open_ui(UIRegistry.MODS_LAYER, {}, UIManager.MODE_REPLACE)
+
+
 func request_exit_game() -> void:
 	var scene_tree: SceneTree = Engine.get_main_loop() as SceneTree
 	if scene_tree == null:

@@ -1,0 +1,95 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://factoria.local/schemas/planet_presets.schema.json",
+	"title": "Factoria Planet Presets",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"additionalProperties": false,
+		"required": ["id", "label", "description", "terrain_ids", "surface_properties"],
+		"properties": {
+			"id": {
+				"$ref": "#/$defs/stable_id"
+			},
+			"aliases": {
+				"type": "array",
+				"default": [],
+				"items": {
+					"type": "string"
+				}
+			},
+			"label": {
+				"type": "string",
+				"minLength": 1
+			},
+			"description": {
+				"type": "string"
+			},
+			"terrain_ids": {
+				"$ref": "#/$defs/stable_id_list"
+			},
+			"decorative_ids": {
+				"type": "array",
+				"default": [],
+				"items": {
+					"type": "string"
+				}
+			},
+			"resource_ids": {
+				"type": "array",
+				"default": [],
+				"items": {
+					"type": "string"
+				}
+			},
+			"entity_ids": {
+				"type": "array",
+				"default": [],
+				"items": {
+					"type": "string"
+				}
+			},
+			"autoplace_controls": {
+				"type": "object",
+				"default": {}
+			},
+			"climate_controls": {
+				"type": "object",
+				"default": {}
+			},
+			"surface_properties": {
+				"type": "object",
+				"required": ["gravity", "pressure", "magnetic_field", "solar_power", "day_night_cycle"],
+				"properties": {
+					"gravity": {
+						"type": "integer"
+					},
+					"pressure": {
+						"type": "integer"
+					},
+					"magnetic_field": {
+						"type": "integer"
+					},
+					"solar_power": {
+						"type": "integer"
+					},
+					"day_night_cycle": {
+						"type": "integer"
+					}
+				}
+			}
+		}
+	},
+	"$defs": {
+		"stable_id": {
+			"type": "string",
+			"pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$"
+		},
+		"stable_id_list": {
+			"type": "array",
+			"items": {
+				"$ref": "#/$defs/stable_id"
+			}
+		}
+	}
+}

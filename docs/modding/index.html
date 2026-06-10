@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="zh-CN" data-active-lang="zh">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Factoria Modding API 0.1 | 中文</title>
+	<style>
+		:root {
+			color-scheme: dark;
+			--bg: #111318;
+			--panel: #191d25;
+			--panel-2: #202632;
+			--text: #e8edf4;
+			--muted: #aab4c3;
+			--line: #313948;
+			--accent: #62b6cb;
+			--accent-2: #e4b363;
+			--danger: #ff8b8b;
+			font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+		}
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			margin: 0;
+			background: var(--bg);
+			color: var(--text);
+			line-height: 1.55;
+		}
+		a {
+			color: var(--accent);
+		}
+		.layout {
+			display: grid;
+			grid-template-columns: 280px minmax(0, 1fr);
+			min-height: 100vh;
+		}
+		nav {
+			position: sticky;
+			top: 0;
+			height: 100vh;
+			padding: 28px 22px;
+			border-right: 1px solid var(--line);
+			background: #0f1217;
+			overflow: auto;
+		}
+		nav h1 {
+			margin: 0 0 6px;
+			font-size: 22px;
+			letter-spacing: 0;
+		}
+		nav p {
+			margin: 0 0 18px;
+			color: var(--muted);
+			font-size: 14px;
+		}
+		nav a {
+			display: block;
+			padding: 7px 0;
+			text-decoration: none;
+			color: var(--text);
+			font-size: 14px;
+		}
+		nav a:hover {
+			color: var(--accent);
+		}
+		button {
+			font: inherit;
+		}
+		.language-switch {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 8px;
+			margin: 0 0 22px;
+		}
+		.language-switch button {
+			min-height: 34px;
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			background: var(--panel);
+			color: var(--muted);
+			cursor: pointer;
+		}
+		.language-switch button:hover {
+			border-color: var(--accent);
+			color: var(--text);
+		}
+		.language-switch button.active {
+			border-color: var(--accent);
+			background: var(--accent);
+			color: #081116;
+		}
+		main {
+			max-width: 1120px;
+			padding: 42px 56px 80px;
+		}
+		section {
+			margin: 0 0 44px;
+		}
+		h2 {
+			margin: 0 0 16px;
+			font-size: 28px;
+			letter-spacing: 0;
+		}
+		h3 {
+			margin: 28px 0 10px;
+			font-size: 20px;
+		}
+		p {
+			color: var(--muted);
+		}
+		code {
+			padding: 2px 5px;
+			border-radius: 4px;
+			background: var(--panel-2);
+			color: var(--text);
+		}
+		pre {
+			margin: 12px 0;
+			padding: 16px;
+			overflow: auto;
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			background: #0b0d11;
+		}
+		pre code {
+			padding: 0;
+			background: transparent;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 12px 0;
+			background: var(--panel);
+			border: 1px solid var(--line);
+		}
+		th, td {
+			padding: 10px 12px;
+			border-bottom: 1px solid var(--line);
+			text-align: left;
+			vertical-align: top;
+		}
+		th {
+			color: var(--text);
+			background: var(--panel-2);
+		}
+		td {
+			color: var(--muted);
+		}
+		.badge {
+			display: inline-block;
+			padding: 2px 8px;
+			border-radius: 999px;
+			background: #19343c;
+			color: #bceefa;
+			font-size: 12px;
+		}
+		.callout {
+			padding: 14px 16px;
+			border-left: 4px solid var(--accent-2);
+			background: var(--panel);
+			color: var(--muted);
+		}
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 16px;
+		}
+		.card {
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			padding: 16px;
+			background: var(--panel);
+		}
+		.card h3 {
+			margin-top: 0;
+		}
+		[data-lang-content],
+		[data-lang-inline] {
+			display: none;
+		}
+		html[data-active-lang="en"] [data-lang-content="en"],
+		html[data-active-lang="zh"] [data-lang-content="zh"] {
+			display: block;
+		}
+		html[data-active-lang="en"] [data-lang-inline="en"],
+		html[data-active-lang="zh"] [data-lang-inline="zh"] {
+			display: inline;
+		}
+		@media (max-width: 900px) {
+			.layout {
+				display: block;
+			}
+			nav {
+				position: static;
+				height: auto;
+			}
+			main {
+				padding: 28px 22px 60px;
+			}
+			.grid {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="layout">
+		<nav>
+			<h1>Factoria Modding</h1>
+			<p>API <span class="badge">0.1</span></p>
+			<div class="language-switch" aria-label="Language">
+				<button type="button" class="active" data-lang-button="zh" aria-pressed="true">中文</button>
+				<button type="button" data-lang-button="en" aria-pressed="false">English</button>
+			</div>
+			<a href="#overview"><span data-lang-inline="en">Overview</span><span data-lang-inline="zh">概览</span></a>
+			<a href="#folder"><span data-lang-inline="en">Folder Layout</span><span data-lang-inline="zh">目录结构</span></a>
+			<a href="#loading"><span data-lang-inline="en">Loading Rules</span><span data-lang-inline="zh">加载规则</span></a>
+			<a href="#manifest"><span data-lang-inline="en">Manifest</span><span data-lang-inline="zh">Manifest</span></a>
+			<a href="#terrain"><span data-lang-inline="en">Terrain</span><span data-lang-inline="zh">地形</span></a>
+			<a href="#visuals"><span data-lang-inline="en">Terrain Visuals</span><span data-lang-inline="zh">地形视觉</span></a>
+			<a href="#autoplace"><span data-lang-inline="en">Autoplace</span><span data-lang-inline="zh">自动生成规则</span></a>
+			<a href="#planet-presets"><span data-lang-inline="en">Planet Presets</span><span data-lang-inline="zh">星球预设</span></a>
+			<a href="#save-compat"><span data-lang-inline="en">Save Compatibility</span><span data-lang-inline="zh">存档兼容</span></a>
+			<a href="#example"><span data-lang-inline="en">Example Mod</span><span data-lang-inline="zh">示例 Mod</span></a>
+			<a href="#schemas"><span data-lang-inline="en">Schemas</span><span data-lang-inline="zh">Schemas</span></a>
+		</nav>
+		<main>
+			<section id="overview">
+				<div data-lang-content="en">
+					<h2>Overview</h2>
+					<p>Factoria mod API 0.1 supports local loose-folder, data-and-resource mods. Mods can add or replace terrain definitions, terrain visuals, terrain autoplace rules, and planet presets. Script mods are not supported in API 0.1.</p>
+					<div class="callout">The game executable is the runtime. The built-in content is the always-enabled <code>core</code> mod. Player mods load after <code>core</code>.</div>
+				</div>
+				<div data-lang-content="zh">
+					<h2>概览</h2>
+					<p>Factoria Mod API 0.1 支持本地松散文件夹形式的数据/资源型 mod。mod 可以新增或整条替换地形定义、地形视觉、地形自动生成规则和星球预设。API 0.1 暂不支持脚本 mod。</p>
+					<div class="callout">游戏本体负责运行时逻辑。内置内容会作为永远启用的 <code>core</code> mod 加载，玩家 mod 总是在 <code>core</code> 之后加载。</div>
+				</div>
+			</section>
+
+			<section id="folder">
+				<div data-lang-content="en">
+					<h2>Folder Layout</h2>
+					<p>Put local mods under the Godot user data mods directory. Each mod folder must contain <code>factoria.mod.json</code>.</p>
+				</div>
+				<div data-lang-content="zh">
+					<h2>目录结构</h2>
+					<p>本地 mod 放在 Godot 用户数据目录的 <code>mods</code> 文件夹下。每个 mod 文件夹都必须包含 <code>factoria.mod.json</code>。</p>
+				</div>
+				<pre><code>user://mods/
+  active_mods.json
+  author.my_mod/
+    factoria.mod.json
+    data/
+      terrain.json
+      terrain_visuals.json
+      autoplace.json
+      planet_presets.json
+    textures/
+      terrain/
+        red_sand/
+          base/1x1.png</code></pre>
+				<div data-lang-content="en">
+					<p>Relative paths inside content files resolve from the mod folder. Absolute paths, <code>res://</code>, and <code>user://</code> are accepted.</p>
+				</div>
+				<div data-lang-content="zh">
+					<p>内容文件里的相对路径会从 mod 文件夹开始解析。也可以使用绝对路径、<code>res://</code> 和 <code>user://</code>。</p>
+				</div>
+			</section>
+
+			<section id="loading">
+				<div data-lang-content="en">
+					<h2>Loading Rules</h2>
+					<table>
+						<tr><th>Rule</th><th>Behavior</th></tr>
+						<tr><td>Core</td><td><code>core</code> always loads first and cannot be disabled.</td></tr>
+						<tr><td>Active mods</td><td>The Mods screen writes <code>user://mods/active_mods.json</code>.</td></tr>
+						<tr><td>Dependencies</td><td>Dependencies load before dependents. Missing dependency disables the dependent mod.</td></tr>
+						<tr><td>Order</td><td>After dependencies, user order decides load order.</td></tr>
+						<tr><td>Overrides</td><td>If two mods define the same content ID, the later mod replaces the entire definition.</td></tr>
+						<tr><td>Reload</td><td>Mods reload from the main menu. Worlds do not hot-reload mods while running.</td></tr>
+					</table>
+				</div>
+				<div data-lang-content="zh">
+					<h2>加载规则</h2>
+					<table>
+						<tr><th>规则</th><th>行为</th></tr>
+						<tr><td>Core</td><td><code>core</code> 永远最先加载，不能禁用。</td></tr>
+						<tr><td>启用列表</td><td>Mods 界面会写入 <code>user://mods/active_mods.json</code>。</td></tr>
+						<tr><td>依赖</td><td>依赖项会先于依赖它的 mod 加载。缺少依赖时，相关 mod 不会进入 registry。</td></tr>
+						<tr><td>顺序</td><td>依赖顺序确定后，同级 mod 按用户排序加载。</td></tr>
+						<tr><td>覆盖</td><td>两个 mod 定义同一个内容 ID 时，后加载的 mod 会整条替换前一个定义。</td></tr>
+						<tr><td>重载</td><td>mod 只在主菜单重载。进入世界后不做热重载。</td></tr>
+					</table>
+				</div>
+			</section>
+
+			<section id="manifest">
+				<div data-lang-content="en">
+					<h2>Manifest</h2>
+					<p>The manifest identifies the mod and points to content files.</p>
+				</div>
+				<div data-lang-content="zh">
+					<h2>Manifest</h2>
+					<p>manifest 用来声明 mod 身份，并指向它提供的内容文件。</p>
+				</div>
+				<pre><code>{
+  "schema_version": 1,
+  "id": "author.my_mod",
+  "name": "My Mod",
+  "version": "1.0.0",
+  "game_api": "0.1",
+  "dependencies": [
+    { "id": "core", "version": ">=0.1.0" }
+  ],
+  "content": {
+    "terrain": ["data/terrain.json"],
+    "terrain_visuals": ["data/terrain_visuals.json"],
+    "autoplace": ["data/autoplace.json"],
+    "planet_presets": ["data/planet_presets.json"]
+  }
+}</code></pre>
+				<div data-lang-content="en">
+					<table>
+						<tr><th>Field</th><th>Required</th><th>Description</th></tr>
+						<tr><td><code>id</code></td><td>Yes</td><td>Stable mod ID. Use lowercase namespace format like <code>author.mod_name</code>.</td></tr>
+						<tr><td><code>version</code></td><td>Yes</td><td>Semantic version string. Saves record exact active mod versions.</td></tr>
+						<tr><td><code>game_api</code></td><td>Yes</td><td>Must be <code>0.1</code> for this API version.</td></tr>
+						<tr><td><code>dependencies</code></td><td>No</td><td>Supports exact versions and <code>&gt;=x.y.z</code> ranges.</td></tr>
+						<tr><td><code>content</code></td><td>Yes</td><td>Lists JSON files for supported content domains.</td></tr>
+					</table>
+				</div>
+				<div data-lang-content="zh">
+					<table>
+						<tr><th>字段</th><th>必填</th><th>说明</th></tr>
+						<tr><td><code>id</code></td><td>是</td><td>稳定的 mod ID。推荐使用小写命名空间格式，例如 <code>author.mod_name</code>。</td></tr>
+						<tr><td><code>version</code></td><td>是</td><td>语义化版本字符串。存档会记录启用 mod 的精确版本。</td></tr>
+						<tr><td><code>game_api</code></td><td>是</td><td>这个 API 版本必须填写 <code>0.1</code>。</td></tr>
+						<tr><td><code>dependencies</code></td><td>否</td><td>支持精确版本和 <code>&gt;=x.y.z</code> 范围。</td></tr>
+						<tr><td><code>content</code></td><td>是</td><td>列出这个 mod 提供的各类 JSON 内容文件。</td></tr>
+					</table>
+				</div>
+			</section>
+
+			<section id="terrain">
+				<div data-lang-content="en">
+					<h2>Terrain</h2>
+					<p>Terrain IDs are stable content IDs. Runtime integer IDs are assigned by the game and saved through a palette.</p>
+				</div>
+				<div data-lang-content="zh">
+					<h2>地形</h2>
+					<p>地形 ID 是稳定内容 ID。运行时整数 ID 由游戏分配，并通过 palette 写入存档，不应该当成长期内容 ID 使用。</p>
+				</div>
+				<pre><code>[
+  {
+    "id": "author.my_mod.red_sand",
+    "aliases": ["red_sand"],
+    "display_name": "Red Sand",
+    "map_color": "0xb45a3a",
+    "walkable": true,
+    "buildable": true,
+    "is_water": false
+  }
+]</code></pre>
+				<div data-lang-content="en">
+					<table>
+						<tr><th>Field</th><th>Description</th></tr>
+						<tr><td><code>id</code></td><td>Stable terrain ID. Prefer <code>mod_id.local_name</code>.</td></tr>
+						<tr><td><code>aliases</code></td><td>Optional short names for compatibility or convenience.</td></tr>
+						<tr><td><code>preferred_runtime_id</code></td><td>Optional hint. Do not rely on it for save compatibility.</td></tr>
+						<tr><td><code>map_color</code></td><td>Minimap color as integer or <code>0xRRGGBB</code>.</td></tr>
+						<tr><td><code>walkable/buildable/is_water</code></td><td>Gameplay flags used by movement, landfill, collision, and generation.</td></tr>
+					</table>
+				</div>
+				<div data-lang-content="zh">
+					<table>
+						<tr><th>字段</th><th>说明</th></tr>
+						<tr><td><code>id</code></td><td>稳定地形 ID。推荐使用 <code>mod_id.local_name</code>。</td></tr>
+						<tr><td><code>aliases</code></td><td>可选短名，用于兼容旧数据或方便内部引用。</td></tr>
+						<tr><td><code>preferred_runtime_id</code></td><td>可选提示值。不要依赖它做存档兼容。</td></tr>
+						<tr><td><code>map_color</code></td><td>小地图颜色，可以是整数或 <code>0xRRGGBB</code>。</td></tr>
+						<tr><td><code>walkable/buildable/is_water</code></td><td>玩法标记，用于移动、填海、碰撞和生成逻辑。</td></tr>
+					</table>
+				</div>
+			</section>
+
+			<section id="visuals">
+				<div data-lang-content="en">
+					<h2>Terrain Visuals</h2>
+					<p>Visual definitions connect terrain IDs to terrain atlas textures. <code>base_1x1</code> is required. Other textures are optional and skipped when absent.</p>
+				</div>
+				<div data-lang-content="zh">
+					<h2>地形视觉</h2>
+					<p>视觉定义把地形 ID 连接到地形图集贴图。<code>base_1x1</code> 是必需贴图，其他贴图缺失时会跳过对应图层。</p>
+				</div>
+				<pre><code>[
+  {
+    "terrain_id": "author.my_mod.red_sand",
+    "priority": 35,
+    "is_water": false,
+    "textures": {
+      "base_1x1": "textures/terrain/red_sand/base/1x1.png",
+      "base_2x2": "textures/terrain/red_sand/base/2x2/2x2.png",
+      "base_4x4": "textures/terrain/red_sand/base/4x4/4x4.png",
+      "overlay": "textures/terrain/red_sand/overlay/dual16.png"
+    }
+  }
+]</code></pre>
+				<div data-lang-content="en">
+					<table>
+						<tr><th>Texture</th><th>Expected Sheet</th></tr>
+						<tr><td><code>base_1x1</code></td><td><code>1024x64</code>, 16 horizontal <code>64x64</code> variants.</td></tr>
+						<tr><td><code>base_2x2</code></td><td><code>2048x128</code>, 16 horizontal <code>128x128</code> variants.</td></tr>
+						<tr><td><code>base_4x4</code></td><td><code>4096x256</code>, 16 horizontal <code>256x256</code> variants.</td></tr>
+						<tr><td><code>overlay</code></td><td><code>1024x1024</code>, 16 mask columns by 16 cycle rows.</td></tr>
+						<tr><td><code>shore_shadow</code></td><td>Optional land-specific water edge shadow sheet.</td></tr>
+						<tr><td><code>shore</code></td><td>Optional land-specific water edge rim sheet.</td></tr>
+						<tr><td><code>shore_combined</code></td><td>Optional combined shore sheet that replaces separate shore layers when present.</td></tr>
+						<tr><td><code>animated_*</code></td><td>Optional path format for water animation frames, using <code>{0}</code> as the frame number.</td></tr>
+						<tr><td><code>foam_texture</code></td><td>Optional top-layer water edge sheet for water terrains.</td></tr>
+					</table>
+				</div>
+				<div data-lang-content="zh">
+					<table>
+						<tr><th>贴图字段</th><th>图集要求</th></tr>
+						<tr><td><code>base_1x1</code></td><td><code>1024x64</code>，横向 16 个 <code>64x64</code> 变体。</td></tr>
+						<tr><td><code>base_2x2</code></td><td><code>2048x128</code>，横向 16 个 <code>128x128</code> 变体。</td></tr>
+						<tr><td><code>base_4x4</code></td><td><code>4096x256</code>，横向 16 个 <code>256x256</code> 变体。</td></tr>
+						<tr><td><code>overlay</code></td><td><code>1024x1024</code>，16 列 mask 乘 16 行 cycle。</td></tr>
+						<tr><td><code>shore_shadow</code></td><td>可选，陆地侧水岸阴影图集。</td></tr>
+						<tr><td><code>shore</code></td><td>可选，陆地侧水岸边缘图集。</td></tr>
+						<tr><td><code>shore_combined</code></td><td>可选，合并水岸图集；存在时优先于拆分的 shore 图层。</td></tr>
+						<tr><td><code>animated_*</code></td><td>可选，水体动画帧路径格式，使用 <code>{0}</code> 作为帧号占位。</td></tr>
+						<tr><td><code>foam_texture</code></td><td>可选，水体地形的顶层水岸泡沫图集。</td></tr>
+					</table>
+				</div>
+			</section>
+
+			<section id="autoplace">
+				<div data-lang-content="en">
+					<h2>Autoplace</h2>
+					<p>Autoplace rules score terrain candidates from height, moisture, temperature, and variation noise. The highest score wins.</p>
+				</div>
+				<div data-lang-content="zh">
+					<h2>自动生成规则</h2>
+					<p>自动生成规则会根据高度、湿度、温度和变化噪声为地形候选项打分。得分最高的地形会被放置。</p>
+				</div>
+				<pre><code>[
+  {
+    "id": "author.my_mod.red_sand",
+    "terrain_id": "author.my_mod.red_sand",
+    "height_range": [-0.2, 0.65],
+    "moisture_range": [-1.0, 0.05],
+    "temperature_range": [0.2, 1.0],
+    "base_score": 0.16,
+    "height_weight": 0.35,
+    "moisture_weight": 0.70,
+    "temperature_weight": 0.35,
+    "variation_weight": 0.06,
+    "range_falloff": 0.42
+  }
+]</code></pre>
+			</section>
+
+			<section id="planet-presets">
+				<div data-lang-content="en">
+					<h2>Planet Presets</h2>
+					<p>A planet preset controls which terrain IDs are enabled for a new world. Modded terrain will not generate unless the selected preset includes it.</p>
+				</div>
+				<div data-lang-content="zh">
+					<h2>星球预设</h2>
+					<p>星球预设决定新世界启用哪些地形 ID。一个 mod 地形只有被当前预设包含时，才会参与地图生成。</p>
+				</div>
+				<pre><code>[
+  {
+    "id": "author.my_mod.red_desert",
+    "aliases": ["red_desert"],
+    "label": "Red Desert",
+    "description": "Dry world with red sand.",
+    "terrain_ids": [
+      "core.base_soil",
+      "core.dirt",
+      "author.my_mod.red_sand",
+      "core.water",
+      "core.deep_water"
+    ],
+    "surface_properties": {
+      "gravity": 10,
+      "pressure": 930,
+      "magnetic_field": 80,
+      "solar_power": 120,
+      "day_night_cycle": 420
+    }
+  }
+]</code></pre>
+			</section>
+
+			<section id="save-compat">
+				<div data-lang-content="en">
+					<h2>Save Compatibility</h2>
+					<p>When a planet is created, the save records active mod IDs, versions, load order, a game data fingerprint, and a terrain palette. Loading is strict.</p>
+					<table>
+						<tr><th>Problem</th><th>Result</th></tr>
+						<tr><td>Required mod missing</td><td>Load is blocked.</td></tr>
+						<tr><td>Version mismatch</td><td>Load is blocked.</td></tr>
+						<tr><td>Extra mod active</td><td>Load is blocked.</td></tr>
+						<tr><td>Terrain palette ID missing</td><td>Load is blocked.</td></tr>
+						<tr><td>Legacy save with core only</td><td>Allowed when no non-core mods are active.</td></tr>
+					</table>
+				</div>
+				<div data-lang-content="zh">
+					<h2>存档兼容</h2>
+					<p>创建星球时，存档会记录启用的 mod ID、版本、加载顺序、游戏数据 fingerprint 和地形 palette。读档会严格校验。</p>
+					<table>
+						<tr><th>问题</th><th>结果</th></tr>
+						<tr><td>必需 mod 缺失</td><td>阻止读档。</td></tr>
+						<tr><td>版本不一致</td><td>阻止读档。</td></tr>
+						<tr><td>额外 mod 启用</td><td>阻止读档。</td></tr>
+						<tr><td>地形 palette ID 无法解析</td><td>阻止读档。</td></tr>
+						<tr><td>只有 core 的旧存档</td><td>没有启用非 core mod 时允许读取。</td></tr>
+					</table>
+				</div>
+			</section>
+
+			<section id="example">
+				<div data-lang-content="en">
+					<h2>Example Mod</h2>
+					<p>A copyable example lives in <code>docs/modding/examples/simple_terrain_mod</code>. It reuses core sand textures so it can load without custom art.</p>
+				</div>
+				<div data-lang-content="zh">
+					<h2>示例 Mod</h2>
+					<p>可复制的示例位于 <code>docs/modding/examples/simple_terrain_mod</code>。它复用了 core 的沙地贴图，所以没有自定义美术也能加载。</p>
+				</div>
+				<pre><code>docs/modding/examples/simple_terrain_mod/
+  factoria.mod.json
+  data/
+    terrain.json
+    terrain_visuals.json
+    autoplace.json
+    planet_presets.json</code></pre>
+				<div data-lang-content="en">
+					<p>Copy that folder to <code>user://mods/example.red_sand</code>, enable it in the Mods screen, reload, and choose the <code>Red Desert</code> planet preset.</p>
+				</div>
+				<div data-lang-content="zh">
+					<p>把这个文件夹复制到 <code>user://mods/example.red_sand</code>，在 Mods 界面启用，重新加载后选择 <code>Red Desert</code> 星球预设。</p>
+				</div>
+			</section>
+
+			<section id="schemas">
+				<div data-lang-content="en">
+					<h2>Schemas</h2>
+					<div class="grid">
+						<div class="card"><h3>Manifest</h3><a href="schemas/manifest.schema.json">schemas/manifest.schema.json</a></div>
+						<div class="card"><h3>Terrain</h3><a href="schemas/terrain.schema.json">schemas/terrain.schema.json</a></div>
+						<div class="card"><h3>Terrain Visuals</h3><a href="schemas/terrain_visuals.schema.json">schemas/terrain_visuals.schema.json</a></div>
+						<div class="card"><h3>Autoplace</h3><a href="schemas/autoplace.schema.json">schemas/autoplace.schema.json</a></div>
+						<div class="card"><h3>Planet Presets</h3><a href="schemas/planet_presets.schema.json">schemas/planet_presets.schema.json</a></div>
+					</div>
+				</div>
+				<div data-lang-content="zh">
+					<h2>Schemas</h2>
+					<div class="grid">
+						<div class="card"><h3>Manifest</h3><a href="schemas/manifest.schema.json">schemas/manifest.schema.json</a></div>
+						<div class="card"><h3>地形</h3><a href="schemas/terrain.schema.json">schemas/terrain.schema.json</a></div>
+						<div class="card"><h3>地形视觉</h3><a href="schemas/terrain_visuals.schema.json">schemas/terrain_visuals.schema.json</a></div>
+						<div class="card"><h3>自动生成规则</h3><a href="schemas/autoplace.schema.json">schemas/autoplace.schema.json</a></div>
+						<div class="card"><h3>星球预设</h3><a href="schemas/planet_presets.schema.json">schemas/planet_presets.schema.json</a></div>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+	<script>
+		(function () {
+			const storageKey = "factoria.moddocs.language";
+			const titles = {
+				en: "Factoria Modding API 0.1",
+				zh: "Factoria Modding API 0.1 | 中文"
+			};
+			const html = document.documentElement;
+			const buttons = Array.from(document.querySelectorAll("[data-lang-button]"));
+
+			function readSavedLanguage() {
+				try {
+					const saved = localStorage.getItem(storageKey);
+					return saved === "en" || saved === "zh" ? saved : "zh";
+				} catch (error) {
+					return "zh";
+				}
+			}
+
+			function saveLanguage(language) {
+				try {
+					localStorage.setItem(storageKey, language);
+				} catch (error) {
+					// The page still works when localStorage is unavailable.
+				}
+			}
+
+			function setLanguage(language) {
+				const nextLanguage = language === "en" ? "en" : "zh";
+				html.dataset.activeLang = nextLanguage;
+				html.lang = nextLanguage === "en" ? "en" : "zh-CN";
+				document.title = titles[nextLanguage];
+				buttons.forEach((button) => {
+					const active = button.dataset.langButton === nextLanguage;
+					button.classList.toggle("active", active);
+					button.setAttribute("aria-pressed", String(active));
+				});
+				saveLanguage(nextLanguage);
+			}
+
+			buttons.forEach((button) => {
+				button.addEventListener("click", () => setLanguage(button.dataset.langButton));
+			});
+			setLanguage(readSavedLanguage());
+		})();
+	</script>
+</body>
+</html>

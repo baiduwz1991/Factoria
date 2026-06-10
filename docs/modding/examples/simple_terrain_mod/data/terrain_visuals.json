@@ -1,0 +1,15 @@
+[
+	{
+		"terrain_id": "example.red_sand.red_sand",
+		"priority": 35,
+		"is_water": false,
+		"textures": {
+			"base_1x1": "res://assets/texture/terrain/sand/base/1x1.png",
+			"base_2x2": "res://assets/texture/terrain/sand/base/2x2/2x2.png",
+			"base_4x4": "res://assets/texture/terrain/sand/base/4x4/4x4.png",
+			"overlay": "res://assets/texture/terrain/sand/overlay/dual16.png",
+			"shore_shadow": "res://assets/texture/terrain/sand/shore/water_shadow_dual16.png",
+			"shore": "res://assets/texture/terrain/sand/shore/water_dual16.png"
+		}
+	}
+]

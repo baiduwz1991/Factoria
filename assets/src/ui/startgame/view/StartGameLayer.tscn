@@ -69,6 +69,11 @@ custom_minimum_size = Vector2(260, 52)
 layout_mode = 2
 text = "设置"
 
+[node name="ModsButton" type="Button" parent="Background/MarginContainer/Content/ButtonColumn"]
+custom_minimum_size = Vector2(260, 52)
+layout_mode = 2
+text = "Mods"
+
 [node name="ExitButton" type="Button" parent="Background/MarginContainer/Content/ButtonColumn"]
 custom_minimum_size = Vector2(260, 52)
 layout_mode = 2
@@ -82,4 +87,5 @@ horizontal_alignment = 1
 
 [connection signal="pressed" from="Background/MarginContainer/Content/ButtonColumn/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="Background/MarginContainer/Content/ButtonColumn/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="Background/MarginContainer/Content/ButtonColumn/ModsButton" to="." method="_on_mods_button_pressed"]
 [connection signal="pressed" from="Background/MarginContainer/Content/ButtonColumn/ExitButton" to="." method="_on_exit_button_pressed"]

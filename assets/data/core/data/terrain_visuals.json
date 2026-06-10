@@ -1,0 +1,77 @@
+[
+	{
+		"terrain_id": "core.base_soil",
+		"priority": 0,
+		"is_water": false,
+		"textures": {
+			"base_1x1": "res://assets/texture/terrain/base_soil/base/1x1.png",
+			"base_2x2": "res://assets/texture/terrain/base_soil/base/2x2/2x2.png",
+			"base_4x4": "res://assets/texture/terrain/base_soil/base/4x4/4x4.png",
+			"shore_shadow": "res://assets/texture/terrain/base_soil/shore/water_shadow_dual16.png",
+			"shore": "res://assets/texture/terrain/base_soil/shore/water_dual16.png"
+		}
+	},
+	{
+		"terrain_id": "core.dirt",
+		"priority": 10,
+		"is_water": false,
+		"textures": {
+			"base_1x1": "res://assets/texture/terrain/dirt/base/1x1.png",
+			"base_2x2": "res://assets/texture/terrain/dirt/base/2x2/2x2.png",
+			"base_4x4": "res://assets/texture/terrain/dirt/base/4x4/4x4.png",
+			"overlay": "res://assets/texture/terrain/dirt/overlay/dual16.png",
+			"shore_shadow": "res://assets/texture/terrain/dirt/shore/water_shadow_dual16.png",
+			"shore": "res://assets/texture/terrain/dirt/shore/water_dual16.png"
+		}
+	},
+	{
+		"terrain_id": "core.grass",
+		"priority": 20,
+		"is_water": false,
+		"textures": {
+			"base_1x1": "res://assets/texture/terrain/grass/base/1x1.png",
+			"base_2x2": "res://assets/texture/terrain/grass/base/2x2/2x2.png",
+			"base_4x4": "res://assets/texture/terrain/grass/base/4x4/4x4.png",
+			"overlay": "res://assets/texture/terrain/grass/overlay/dual16.png",
+			"shore_shadow": "res://assets/texture/terrain/grass/shore/water_shadow_dual16.png",
+			"shore": "res://assets/texture/terrain/grass/shore/water_dual16.png"
+		}
+	},
+	{
+		"terrain_id": "core.sand",
+		"priority": 30,
+		"is_water": false,
+		"textures": {
+			"base_1x1": "res://assets/texture/terrain/sand/base/1x1.png",
+			"base_2x2": "res://assets/texture/terrain/sand/base/2x2/2x2.png",
+			"base_4x4": "res://assets/texture/terrain/sand/base/4x4/4x4.png",
+			"overlay": "res://assets/texture/terrain/sand/overlay/dual16.png",
+			"shore_shadow": "res://assets/texture/terrain/sand/shore/water_shadow_dual16.png",
+			"shore": "res://assets/texture/terrain/sand/shore/water_dual16.png"
+		}
+	},
+	{
+		"terrain_id": "core.water",
+		"priority": 40,
+		"is_water": true,
+		"foam_texture": "res://assets/texture/terrain/water/effect/foam_dual16.png",
+		"textures": {
+			"base_1x1": "res://assets/texture/terrain/water/base/1x1.png",
+			"base_2x2": "res://assets/texture/terrain/water/base/2x2/2x2.png",
+			"base_4x4": "res://assets/texture/terrain/water/base/4x4/4x4.png",
+			"overlay": "res://assets/texture/terrain/water/overlay/dual16.png"
+		}
+	},
+	{
+		"terrain_id": "core.deep_water",
+		"priority": 50,
+		"is_water": true,
+		"foam_texture": "res://assets/texture/terrain/water/effect/foam_dual16.png",
+		"textures": {
+			"base_1x1": "res://assets/texture/terrain/deep_water/base/1x1.png",
+			"base_2x2": "res://assets/texture/terrain/deep_water/base/2x2/2x2.png",
+			"base_4x4": "res://assets/texture/terrain/deep_water/base/4x4/4x4.png",
+			"overlay": "res://assets/texture/terrain/deep_water/overlay/dual16.png"
+		}
+	}
+]

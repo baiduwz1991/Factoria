@@ -596,6 +596,16 @@ func _precheck_snapshot_payloads(snapshot: Dictionary, scope: StringName) -> Dic
 				"error_code": &"payload_invalid_type",
 				"controller_id": controller_id
 			}
+		var precheck_variant: Variant = controller.precheck_import_save_data(payload_variant as Dictionary)
+		if precheck_variant is Dictionary:
+			var precheck_result: Dictionary = precheck_variant as Dictionary
+			if not bool(precheck_result.get("ok", false)):
+				return {
+					"ok": false,
+					"error_code": &"payload_precheck_failed",
+					"controller_id": controller_id,
+					"detail": precheck_result
+				}
 
 	return {"ok": true}
 

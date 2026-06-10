@@ -1,0 +1,22 @@
+{
+	"schema_version": 1,
+	"id": "core",
+	"name": "Factoria Core",
+	"version": "0.1.0",
+	"game_api": "0.1",
+	"dependencies": [],
+	"content": {
+		"terrain": [
+			"data/terrain.json"
+		],
+		"terrain_visuals": [
+			"data/terrain_visuals.json"
+		],
+		"autoplace": [
+			"data/autoplace.json"
+		],
+		"planet_presets": [
+			"data/planet_presets.json"
+		]
+	}
+}

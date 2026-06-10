@@ -3,6 +3,7 @@ extends BaseUI
 
 signal start_game_requested
 signal settings_requested
+signal mods_requested
 signal exit_requested
 
 #region 配置与常量
@@ -49,6 +50,13 @@ func _on_settings_button_pressed() -> void:
 	if _start_game_controller != null:
 		_start_game_controller.request_open_settings()
 	_set_status("正在打开设置界面。")
+
+
+func _on_mods_button_pressed() -> void:
+	mods_requested.emit()
+	if _start_game_controller != null:
+		_start_game_controller.request_open_mods()
+	_set_status("Opening mods.")
 
 
 func _on_exit_button_pressed() -> void:

@@ -1,0 +1,60 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://factoria.local/schemas/terrain.schema.json",
+	"title": "Factoria Terrain Definitions",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"additionalProperties": false,
+		"required": ["id", "display_name", "map_color", "walkable", "buildable", "is_water"],
+		"properties": {
+			"id": {
+				"$ref": "#/$defs/stable_id"
+			},
+			"aliases": {
+				"type": "array",
+				"default": [],
+				"items": {
+					"type": "string"
+				}
+			},
+			"preferred_runtime_id": {
+				"type": "integer",
+				"minimum": 1,
+				"description": "Optional performance/runtime id hint. Saves still use stable ids in the terrain palette."
+			},
+			"display_name": {
+				"type": "string",
+				"minLength": 1
+			},
+			"map_color": {
+				"oneOf": [
+					{
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 16777215
+					},
+					{
+						"type": "string",
+						"pattern": "^0x[0-9a-fA-F]{6}$"
+					}
+				]
+			},
+			"walkable": {
+				"type": "boolean"
+			},
+			"buildable": {
+				"type": "boolean"
+			},
+			"is_water": {
+				"type": "boolean"
+			}
+		}
+	},
+	"$defs": {
+		"stable_id": {
+			"type": "string",
+			"pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$"
+		}
+	}
+}

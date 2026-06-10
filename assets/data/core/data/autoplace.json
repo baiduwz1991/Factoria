@@ -1,0 +1,80 @@
+[
+	{
+		"id": "core.deep_water",
+		"terrain_id": "core.deep_water",
+		"height_range": [-1.0, -0.58],
+		"moisture_range": [-1.0, 1.0],
+		"temperature_range": [-1.0, 1.0],
+		"base_score": 0.50,
+		"height_weight": 2.0,
+		"moisture_weight": 0.0,
+		"temperature_weight": 0.0,
+		"variation_weight": 0.0,
+		"range_falloff": 0.20
+	},
+	{
+		"id": "core.water",
+		"terrain_id": "core.water",
+		"height_range": [-0.62, -0.34],
+		"moisture_range": [-1.0, 1.0],
+		"temperature_range": [-1.0, 1.0],
+		"base_score": 0.42,
+		"height_weight": 1.8,
+		"moisture_weight": 0.0,
+		"temperature_weight": 0.0,
+		"variation_weight": 0.0,
+		"range_falloff": 0.22
+	},
+	{
+		"id": "core.sand",
+		"terrain_id": "core.sand",
+		"height_range": [-0.36, 0.20],
+		"moisture_range": [-1.0, 0.20],
+		"temperature_range": [0.0, 1.0],
+		"base_score": 0.10,
+		"height_weight": 0.45,
+		"moisture_weight": 0.75,
+		"temperature_weight": 0.25,
+		"variation_weight": 0.08,
+		"range_falloff": 0.46
+	},
+	{
+		"id": "core.grass",
+		"terrain_id": "core.grass",
+		"height_range": [-0.34, 0.78],
+		"moisture_range": [0.08, 1.0],
+		"temperature_range": [-0.80, 0.72],
+		"base_score": 0.18,
+		"height_weight": 0.25,
+		"moisture_weight": 0.85,
+		"temperature_weight": 0.20,
+		"variation_weight": 0.04,
+		"range_falloff": 0.52
+	},
+	{
+		"id": "core.dirt",
+		"terrain_id": "core.dirt",
+		"height_range": [-0.34, 1.0],
+		"moisture_range": [-0.55, 0.55],
+		"temperature_range": [-1.0, 0.88],
+		"base_score": 0.15,
+		"height_weight": 0.28,
+		"moisture_weight": 0.50,
+		"temperature_weight": 0.10,
+		"variation_weight": 0.05,
+		"range_falloff": 0.50
+	},
+	{
+		"id": "core.base_soil",
+		"terrain_id": "core.base_soil",
+		"height_range": [-0.34, 1.0],
+		"moisture_range": [-1.0, 0.30],
+		"temperature_range": [-0.20, 1.0],
+		"base_score": 0.12,
+		"height_weight": 0.18,
+		"moisture_weight": 0.35,
+		"temperature_weight": 0.18,
+		"variation_weight": 0.05,
+		"range_falloff": 0.55
+	}
+]

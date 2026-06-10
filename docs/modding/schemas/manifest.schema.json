@@ -1,0 +1,75 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://factoria.local/schemas/manifest.schema.json",
+	"title": "Factoria Mod Manifest",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["schema_version", "id", "name", "version", "game_api", "content"],
+	"properties": {
+		"schema_version": {
+			"type": "integer",
+			"const": 1
+		},
+		"id": {
+			"type": "string",
+			"pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$"
+		},
+		"name": {
+			"type": "string",
+			"minLength": 1
+		},
+		"version": {
+			"type": "string",
+			"pattern": "^\\d+\\.\\d+\\.\\d+$"
+		},
+		"game_api": {
+			"type": "string",
+			"const": "0.1"
+		},
+		"dependencies": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["id"],
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"version": {
+						"type": "string",
+						"description": "Exact version or >=x.y.z range."
+					}
+				}
+			}
+		},
+		"content": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"terrain": {
+					"$ref": "#/$defs/path_list"
+				},
+				"terrain_visuals": {
+					"$ref": "#/$defs/path_list"
+				},
+				"autoplace": {
+					"$ref": "#/$defs/path_list"
+				},
+				"planet_presets": {
+					"$ref": "#/$defs/path_list"
+				}
+			}
+		}
+	},
+	"$defs": {
+		"path_list": {
+			"type": "array",
+			"items": {
+				"type": "string",
+				"minLength": 1
+			}
+		}
+	}
+}

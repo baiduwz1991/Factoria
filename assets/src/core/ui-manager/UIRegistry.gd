@@ -2,6 +2,7 @@ class_name UIRegistry
 extends RefCounted
 
 const START_GAME_LAYER: StringName = &"START_GAME_LAYER"
+const MODS_LAYER: StringName = &"MODS_LAYER"
 const SETTINGS_LAYER: StringName = &"SETTINGS_LAYER"
 const SAVE_SLOT_POP_LAYER: StringName = &"SAVE_SLOT_POP_LAYER"
 const SAVE_LOADING_POP_LAYER: StringName = &"SAVE_LOADING_POP_LAYER"
@@ -16,6 +17,13 @@ const DEBUG_STATS_OVERLAY: StringName = &"DEBUG_STATS_OVERLAY"
 const _UI_REGISTRY: Dictionary[StringName, Dictionary] = {
 	START_GAME_LAYER: {
 		"scene_path": "res://assets/src/ui/startgame/view/StartGameLayer.tscn",
+		"default_mode": &"replace",
+		"layer": &"main",
+		"allow_multi_instance": false,
+		"block_input": true
+	},
+	MODS_LAYER: {
+		"scene_path": "res://assets/src/ui/mods/view/ModsLayer.tscn",
 		"default_mode": &"replace",
 		"layer": &"main",
 		"allow_multi_instance": false,

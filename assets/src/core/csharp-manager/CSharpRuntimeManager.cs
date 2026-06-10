@@ -12,10 +12,17 @@ public partial class CSharpRuntimeManager : Node
     private readonly object _terrainJobsLock = new();
     private readonly Dictionary<string, TerrainVisualJob> _terrainJobs = new();
     private readonly ConcurrentQueue<TerrainVisualJobResult> _terrainResults = new();
+    private TerrainVisualSpec _terrainVisualSpec = TerrainVisualSpec.CreateDefault();
 
     public override void _ExitTree()
     {
         CancelAllTerrainVisualJobs();
+    }
+
+    public void ConfigureTerrainVisualSpec(GodotDictionary visualSpec)
+    {
+        _terrainVisualSpec = TerrainVisualSpec.FromDictionary(visualSpec);
+        TerrainChunkCanvas.ConfigureTerrainVisualSpec(_terrainVisualSpec);
     }
 
     public bool StartTerrainVisualJob(
@@ -37,6 +44,7 @@ public partial class CSharpRuntimeManager : Node
             ? (int[])chunkTiles.Clone()
             : Array.Empty<int>();
         var job = new TerrainVisualJob(key);
+        TerrainVisualSpec visualSpec = _terrainVisualSpec;
 
         lock (_terrainJobsLock)
         {
@@ -51,7 +59,8 @@ public partial class CSharpRuntimeManager : Node
             chunkSize,
             tileSize,
             snapshotCopy,
-            chunkTilesCopy
+            chunkTilesCopy,
+            visualSpec
         ));
         return true;
     }
@@ -125,12 +134,13 @@ public partial class CSharpRuntimeManager : Node
         int chunkSize,
         int tileSize,
         int[] terrainSnapshot,
-        int[] chunkTiles
+        int[] chunkTiles,
+        TerrainVisualSpec visualSpec
     )
     {
         try
         {
-            TerrainChunkVisualData visualData = new TerrainRuntime().BuildChunkVisualData(
+            TerrainChunkVisualData visualData = new TerrainRuntime(visualSpec).BuildChunkVisualData(
                 chunkCoord,
                 chunkSize,
                 tileSize,

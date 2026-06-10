@@ -1,0 +1,15 @@
+[
+	{
+		"id": "example.red_sand.red_sand",
+		"terrain_id": "example.red_sand.red_sand",
+		"height_range": [-0.20, 0.65],
+		"moisture_range": [-1.0, 0.05],
+		"temperature_range": [0.20, 1.0],
+		"base_score": 0.16,
+		"height_weight": 0.35,
+		"moisture_weight": 0.70,
+		"temperature_weight": 0.35,
+		"variation_weight": 0.06,
+		"range_falloff": 0.42
+	}
+]

@@ -13,11 +13,14 @@ var spawn_chunk: Vector2i = Vector2i.ZERO
 var surface_properties: Dictionary = {}
 var generated_chunk_count: int = 0
 var dirty_chunk_count: int = 0
+var active_mods: Array[Dictionary] = []
+var game_data_fingerprint: String = ""
+var terrain_palette: Dictionary = {}
 #endregion
 
 #region 对外接口 - 版本
 func get_schema_version() -> int:
-	return 2
+	return 3
 #endregion
 
 #region 对外接口 - 序列化
@@ -34,7 +37,10 @@ func to_dict() -> Dictionary:
 		"spawn_chunk": SerializeUtils.vector2i_to_dict(spawn_chunk),
 		"surface_properties": surface_properties.duplicate(true),
 		"generated_chunk_count": generated_chunk_count,
-		"dirty_chunk_count": dirty_chunk_count
+		"dirty_chunk_count": dirty_chunk_count,
+		"active_mods": active_mods.duplicate(true),
+		"game_data_fingerprint": game_data_fingerprint,
+		"terrain_palette": terrain_palette.duplicate(true)
 	}
 
 
@@ -50,6 +56,9 @@ func from_dict(raw: Dictionary) -> void:
 	surface_properties = SerializeUtils.parse_dictionary(raw.get("surface_properties", surface_properties))
 	generated_chunk_count = int(raw.get("generated_chunk_count", generated_chunk_count))
 	dirty_chunk_count = int(raw.get("dirty_chunk_count", dirty_chunk_count))
+	active_mods = SerializeUtils.parse_dictionary_array(raw.get("active_mods", active_mods))
+	game_data_fingerprint = str(raw.get("game_data_fingerprint", game_data_fingerprint))
+	terrain_palette = SerializeUtils.parse_dictionary(raw.get("terrain_palette", terrain_palette))
 	sanitize()
 
 
@@ -71,7 +80,10 @@ func apply_chunked_planet(
 	next_chunk_size: int,
 	next_tile_size: int,
 	next_spawn_chunk: Vector2i,
-	next_surface_properties: Dictionary = {}
+	next_surface_properties: Dictionary = {},
+	next_active_mods: Array[Dictionary] = [],
+	next_game_data_fingerprint: String = "",
+	next_terrain_palette: Dictionary = {}
 ) -> void:
 	slot_id = next_slot_id
 	planet_preset_id = next_planet_preset_id
@@ -84,6 +96,9 @@ func apply_chunked_planet(
 	surface_properties = next_surface_properties.duplicate(true)
 	generated_chunk_count = 0
 	dirty_chunk_count = 0
+	active_mods = next_active_mods.duplicate(true)
+	game_data_fingerprint = next_game_data_fingerprint
+	terrain_palette = next_terrain_palette.duplicate(true)
 	sanitize()
 
 
@@ -105,4 +120,7 @@ func clear() -> void:
 	surface_properties = {}
 	generated_chunk_count = 0
 	dirty_chunk_count = 0
+	active_mods = []
+	game_data_fingerprint = ""
+	terrain_palette = {}
 #endregion

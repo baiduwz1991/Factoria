@@ -55,6 +55,10 @@ func import_save_data(_payload: Dictionary) -> bool:
 	return true
 
 
+func precheck_import_save_data(_payload: Dictionary) -> Dictionary:
+	return {"ok": true}
+
+
 func get_save_meta_fragment() -> Dictionary:
 	return {}
 #endregion
@@ -105,4 +109,3 @@ func _get_save_manager() -> Node:
 func _report_abstract_method(method_name: String) -> void:
 	push_error("BaseController 抽象方法未实现：%s" % method_name)
 #endregion
-

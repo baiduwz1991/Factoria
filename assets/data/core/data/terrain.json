@@ -1,0 +1,62 @@
+[
+	{
+		"id": "core.base_soil",
+		"aliases": ["base_soil"],
+		"preferred_runtime_id": 1,
+		"display_name": "Base Soil",
+		"map_color": "0x603025",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	},
+	{
+		"id": "core.dirt",
+		"aliases": ["dirt"],
+		"preferred_runtime_id": 2,
+		"display_name": "Dirt",
+		"map_color": "0x825836",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	},
+	{
+		"id": "core.grass",
+		"aliases": ["grass"],
+		"preferred_runtime_id": 3,
+		"display_name": "Grass",
+		"map_color": "0x699737",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	},
+	{
+		"id": "core.sand",
+		"aliases": ["sand"],
+		"preferred_runtime_id": 4,
+		"display_name": "Sand",
+		"map_color": "0xcab064",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	},
+	{
+		"id": "core.water",
+		"aliases": ["water"],
+		"preferred_runtime_id": 5,
+		"display_name": "Water",
+		"map_color": "0x3193ae",
+		"walkable": false,
+		"buildable": false,
+		"is_water": true
+	},
+	{
+		"id": "core.deep_water",
+		"aliases": ["deep_water"],
+		"preferred_runtime_id": 6,
+		"display_name": "Deep Water",
+		"map_color": "0x185584",
+		"walkable": false,
+		"buildable": false,
+		"is_water": true
+	}
+]

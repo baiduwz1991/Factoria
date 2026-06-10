@@ -13,14 +13,19 @@ signal planet_loading_changed(snapshot: Dictionary)
 var _save_data: PlanetSaveData = PlanetSaveData.new()
 var _chunk_store: MapChunkStore = MapChunkStore.new()
 var _chunk_cache: MapChunkCache = MapChunkCache.new()
-var _terrain_catalog: TerrainCatalog = TerrainCatalog.new()
-var _autoplace_catalog: TerrainAutoplaceCatalog = TerrainAutoplaceCatalog.new()
-var _preset_catalog: PlanetPresetCatalog = PlanetPresetCatalog.new()
+var _terrain_catalog: TerrainCatalog = null
+var _autoplace_catalog: TerrainAutoplaceCatalog = null
+var _preset_catalog: PlanetPresetCatalog = null
 var _runtime_ready: bool = false
 var _runtime_slot_id: int = 0
 var _runtime_seed: int = 0
 var _runtime_chunk_size: int = 0
 var _runtime_preset_id: StringName = &""
+var _runtime_palette_hash: String = ""
+
+
+func _init() -> void:
+	_refresh_catalogs()
 
 
 func get_id() -> StringName:
@@ -32,14 +37,16 @@ func get_save_scope() -> StringName:
 
 
 func get_save_module_version() -> int:
-	return 1
+	return 2
 
 
 func get_planet_preset_options() -> Array[Dictionary]:
+	_refresh_catalogs()
 	return _preset_catalog.get_options()
 
 
 func create_planet_for_slot(slot_id: int, planet_preset_id: StringName, planet_seed: int) -> Dictionary:
+	_refresh_catalogs()
 	if not _preset_catalog.has_preset(planet_preset_id):
 		return _build_error_result(ERROR_PLANET_PRESET_INVALID, {
 			"planet_preset_id": String(planet_preset_id)
@@ -58,7 +65,10 @@ func create_planet_for_slot(slot_id: int, planet_preset_id: StringName, planet_s
 		MapChunkGenerator.DEFAULT_CHUNK_SIZE,
 		MapChunkGenerator.DEFAULT_TILE_SIZE,
 		Vector2i.ZERO,
-		preset.surface_properties
+		preset.surface_properties,
+		_get_active_mod_snapshot(),
+		_get_game_data_fingerprint(),
+		_terrain_catalog.get_palette()
 	)
 	_runtime_ready = false
 	_setup_runtime(save_manager)
@@ -83,7 +93,10 @@ func get_runtime_snapshot() -> Dictionary:
 		"planet_preset_id": String(_save_data.planet_preset_id),
 		"surface_properties": _save_data.surface_properties.duplicate(true),
 		"generated_chunk_count": _chunk_cache.get_generated_chunk_count(),
-		"dirty_chunk_count": _chunk_cache.get_dirty_chunk_count()
+		"dirty_chunk_count": _chunk_cache.get_dirty_chunk_count(),
+		"active_mods": _save_data.active_mods.duplicate(true),
+		"game_data_fingerprint": _save_data.game_data_fingerprint,
+		"terrain_palette": _save_data.terrain_palette.duplicate(true)
 	}
 
 
@@ -180,11 +193,34 @@ func import_save_data(payload: Dictionary) -> bool:
 	if payload.is_empty():
 		_save_data.clear()
 		_runtime_ready = false
+		_refresh_catalogs()
 		return true
+	var precheck_result: Dictionary = precheck_import_save_data(payload)
+	if not bool(precheck_result.get("ok", false)):
+		return false
 	_save_data.from_dict(payload)
+	_refresh_catalogs(_save_data.terrain_palette)
+	if _terrain_catalog.has_palette_errors():
+		return false
 	_runtime_ready = false
 	_ensure_runtime()
 	return true
+
+
+func precheck_import_save_data(payload: Dictionary) -> Dictionary:
+	if payload.is_empty():
+		return {"ok": true}
+	var probe: PlanetSaveData = PlanetSaveData.new()
+	probe.from_dict(payload)
+	var mod_manager: Node = _get_mod_manager()
+	if mod_manager == null or not mod_manager.has_method("validate_saved_mod_state"):
+		return {"ok": true}
+	return mod_manager.call(
+		"validate_saved_mod_state",
+		probe.active_mods,
+		probe.game_data_fingerprint,
+		probe.terrain_palette
+	) as Dictionary
 
 
 func get_save_meta_fragment() -> Dictionary:
@@ -208,14 +244,19 @@ func _ensure_runtime() -> void:
 
 
 func _setup_runtime(save_manager: Node) -> void:
+	if _terrain_catalog == null or _autoplace_catalog == null or _preset_catalog == null:
+		_refresh_catalogs(_save_data.terrain_palette)
+	var palette_hash: String = JSON.stringify(_terrain_catalog.get_palette()).sha256_text()
 	if (
 		_runtime_ready
 		and _runtime_slot_id == _save_data.slot_id
 		and _runtime_seed == _save_data.planet_seed
 		and _runtime_chunk_size == _save_data.chunk_size
 		and _runtime_preset_id == _save_data.planet_preset_id
+		and _runtime_palette_hash == palette_hash
 	):
 		return
+	_configure_csharp_terrain_visuals()
 	_chunk_store.setup(_save_data.slot_id, save_manager)
 	_chunk_cache.setup(
 		_save_data.planet_seed,
@@ -230,6 +271,52 @@ func _setup_runtime(save_manager: Node) -> void:
 	_runtime_seed = _save_data.planet_seed
 	_runtime_chunk_size = _save_data.chunk_size
 	_runtime_preset_id = _save_data.planet_preset_id
+	_runtime_palette_hash = palette_hash
+
+
+func _refresh_catalogs(saved_palette: Dictionary = {}) -> void:
+	_terrain_catalog = TerrainCatalog.new(saved_palette)
+	_autoplace_catalog = TerrainAutoplaceCatalog.new(_terrain_catalog)
+	_preset_catalog = PlanetPresetCatalog.new()
+	_runtime_ready = false
+
+
+func _configure_csharp_terrain_visuals() -> void:
+	var scene_tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if scene_tree == null or scene_tree.root == null:
+		return
+	var runtime_manager: Node = scene_tree.root.get_node_or_null("CSharpRuntimeManager")
+	if runtime_manager == null or not runtime_manager.has_method("ConfigureTerrainVisualSpec"):
+		return
+	runtime_manager.call("ConfigureTerrainVisualSpec", _terrain_catalog.get_visual_spec())
+
+
+func _get_mod_manager() -> Node:
+	var scene_tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if scene_tree == null or scene_tree.root == null:
+		return null
+	return scene_tree.root.get_node_or_null("ModManager")
+
+
+func _get_active_mod_snapshot() -> Array[Dictionary]:
+	var mod_manager: Node = _get_mod_manager()
+	if mod_manager == null or not mod_manager.has_method("get_active_mod_snapshot"):
+		return []
+	var raw_snapshot: Variant = mod_manager.call("get_active_mod_snapshot")
+	var result: Array[Dictionary] = []
+	if not (raw_snapshot is Array):
+		return result
+	for raw_entry in (raw_snapshot as Array):
+		if raw_entry is Dictionary:
+			result.append((raw_entry as Dictionary).duplicate(true))
+	return result
+
+
+func _get_game_data_fingerprint() -> String:
+	var mod_manager: Node = _get_mod_manager()
+	if mod_manager == null or not mod_manager.has_method("get_game_data_fingerprint"):
+		return ""
+	return str(mod_manager.call("get_game_data_fingerprint"))
 
 
 func _global_tile_to_chunk_coord(global_tile: Vector2i, chunk_size: int) -> Vector2i:

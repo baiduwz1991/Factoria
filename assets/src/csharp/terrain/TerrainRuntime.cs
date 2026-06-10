@@ -4,24 +4,18 @@ using System.Threading;
 
 public sealed class TerrainRuntime
 {
-    private const int TerrainBaseSoil = 1;
-    private const int TerrainDirt = 2;
-    private const int TerrainGrass = 3;
-    private const int TerrainSand = 4;
-    private const int TerrainWater = 5;
-    private const int TerrainDeepWater = 6;
-
-    private const int VisualBaseSoil = 0;
-    private const int VisualDirt = 1;
-    private const int VisualGrass = 2;
-    private const int VisualSand = 3;
-    private const int VisualWater = 4;
-    private const int VisualDeepWater = 5;
     private const int CycleSize = 4;
     private const int CommandStride = 5;
     private const int NotPureVisual = -1;
     private const int WaterRectStride = 4;
     private const float GrassPatch4FeatureChance = 0.18f;
+
+    private readonly TerrainVisualSpec _visualSpec;
+
+    public TerrainRuntime(TerrainVisualSpec visualSpec = null)
+    {
+        _visualSpec = visualSpec ?? TerrainVisualSpec.CreateDefault();
+    }
 
     public TerrainChunkVisualData BuildChunkVisualData(
         Vector2I chunkCoord,
@@ -98,25 +92,17 @@ public sealed class TerrainRuntime
         );
     }
 
-    private static int SampleSnapshot(int[] snapshot, int snapshotWidth, int x, int y)
+    private int SampleSnapshot(int[] snapshot, int snapshotWidth, int x, int y)
     {
         int index = y * snapshotWidth + x;
         if (index < 0 || index >= snapshot.Length)
-            return TerrainBaseSoil;
+            return _visualSpec.DefaultRuntimeId;
         return snapshot[index];
     }
 
-    private static int VisualFromTerrain(int terrainId)
+    private int VisualFromTerrain(int terrainId)
     {
-        return terrainId switch
-        {
-            TerrainDirt => VisualDirt,
-            TerrainGrass => VisualGrass,
-            TerrainSand => VisualSand,
-            TerrainWater => VisualWater,
-            TerrainDeepWater => VisualDeepWater,
-            _ => VisualBaseSoil
-        };
+        return _visualSpec.GetVisualIndexForTerrain(terrainId);
     }
 
     private static int GetCycleIndex(Vector2I chunkCoord, int chunkSize, int localX, int localY)
@@ -128,7 +114,7 @@ public sealed class TerrainRuntime
         return cycleY * CycleSize + cycleX;
     }
 
-    private static int GetLowestPriorityVisual(int[] corners)
+    private int GetLowestPriorityVisual(int[] corners)
     {
         int bestVisual = corners[0];
         int bestPriority = VisualPriority(bestVisual);
@@ -155,7 +141,7 @@ public sealed class TerrainRuntime
         return true;
     }
 
-    private static int[] BuildBasePatchCommands(
+    private int[] BuildBasePatchCommands(
         Vector2I chunkCoord,
         int chunkSize,
         int[] pureVisuals,
@@ -169,7 +155,7 @@ public sealed class TerrainRuntime
         return FlattenPatchCommands(commands);
     }
 
-    private static void AddBasePatchCommands(
+    private void AddBasePatchCommands(
         List<PatchCommand> commands,
         bool[] covered,
         Vector2I chunkCoord,
@@ -213,9 +199,9 @@ public sealed class TerrainRuntime
         }
     }
 
-    private static int SelectBasePatchVariant(int globalX, int globalY, int visual, int patchSize, int cycleVariant)
+    private int SelectBasePatchVariant(int globalX, int globalY, int visual, int patchSize, int cycleVariant)
     {
-        if (visual != VisualGrass || patchSize != 4)
+        if (!_visualSpec.IsPatchFeatureVisual(visual) || patchSize != 4)
             return cycleVariant;
 
         int patchX = globalX / patchSize;
@@ -307,7 +293,7 @@ public sealed class TerrainRuntime
         return result;
     }
 
-    private static void AddOverlayCommands(
+    private void AddOverlayCommands(
         List<DrawCommand> commands,
         int localX,
         int localY,
@@ -316,7 +302,7 @@ public sealed class TerrainRuntime
         int[] corners
     )
     {
-        for (int visual = VisualBaseSoil; visual <= VisualDeepWater; visual++)
+        foreach (int visual in _visualSpec.VisualIndices)
         {
             int mask = BuildMask(corners, visual);
             if (mask == 0 || mask == 15 || visual == baseVisual)
@@ -325,7 +311,7 @@ public sealed class TerrainRuntime
         }
     }
 
-    private static void AddWaterEdgeCommands(
+    private void AddWaterEdgeCommands(
         List<DrawCommand> shoreCommands,
         List<DrawCommand> foamCommands,
         int localX,
@@ -342,9 +328,9 @@ public sealed class TerrainRuntime
         }
 
         if (waterMask != 0 && waterMask != 15)
-            foamCommands.Add(new DrawCommand(localX, localY, VisualWater, waterMask, cycle));
+            foamCommands.Add(new DrawCommand(localX, localY, _visualSpec.FoamVisualIndex, waterMask, cycle));
 
-        for (int visual = VisualBaseSoil; visual <= VisualSand; visual++)
+        foreach (int visual in _visualSpec.LandVisualIndices)
         {
             int landMask = BuildMask(corners, visual);
             if (landMask == 0 || landMask == 15)
@@ -379,7 +365,7 @@ public sealed class TerrainRuntime
         return result;
     }
 
-    private static int[] BuildWaterRects(int[] chunkTiles, int chunkSize, CancellationToken cancellationToken)
+    private int[] BuildWaterRects(int[] chunkTiles, int chunkSize, CancellationToken cancellationToken)
     {
         var rects = new List<WaterRect>();
         var openRects = new Dictionary<string, WaterRect>();
@@ -437,38 +423,30 @@ public sealed class TerrainRuntime
         return result;
     }
 
-    private static int SampleTile(int[] tiles, int chunkSize, int localX, int localY)
+    private int SampleTile(int[] tiles, int chunkSize, int localX, int localY)
     {
         int index = localY * chunkSize + localX;
         if (index < 0 || index >= tiles.Length)
-            return TerrainBaseSoil;
+            return _visualSpec.DefaultRuntimeId;
         return tiles[index];
     }
 
-    private static bool IsWaterTerrain(int terrainId)
+    private bool IsWaterTerrain(int terrainId)
     {
-        return terrainId == TerrainWater || terrainId == TerrainDeepWater;
+        return _visualSpec.IsWaterTerrain(terrainId);
     }
 
-    private static bool IsWaterVisual(int visual)
+    private bool IsWaterVisual(int visual)
     {
-        return visual == VisualWater || visual == VisualDeepWater;
+        return _visualSpec.IsWaterVisual(visual);
     }
 
-    private static int VisualPriority(int visual)
+    private int VisualPriority(int visual)
     {
-        return visual switch
-        {
-            VisualDeepWater => 50,
-            VisualWater => 40,
-            VisualSand => 30,
-            VisualGrass => 20,
-            VisualDirt => 10,
-            _ => 0
-        };
+        return _visualSpec.GetVisualPriority(visual);
     }
 
-    private static int CompareDrawCommands(DrawCommand left, DrawCommand right)
+    private int CompareDrawCommands(DrawCommand left, DrawCommand right)
     {
         int priorityCompare = VisualPriority(left.Visual).CompareTo(VisualPriority(right.Visual));
         if (priorityCompare != 0)

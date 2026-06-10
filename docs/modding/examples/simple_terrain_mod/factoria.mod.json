@@ -1,0 +1,27 @@
+{
+	"schema_version": 1,
+	"id": "example.red_sand",
+	"name": "Example Red Sand",
+	"version": "1.0.0",
+	"game_api": "0.1",
+	"dependencies": [
+		{
+			"id": "core",
+			"version": ">=0.1.0"
+		}
+	],
+	"content": {
+		"terrain": [
+			"data/terrain.json"
+		],
+		"terrain_visuals": [
+			"data/terrain_visuals.json"
+		],
+		"autoplace": [
+			"data/autoplace.json"
+		],
+		"planet_presets": [
+			"data/planet_presets.json"
+		]
+	}
+}

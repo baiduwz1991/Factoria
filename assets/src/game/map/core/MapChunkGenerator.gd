@@ -33,7 +33,7 @@ func setup(
 
 	for raw_terrain_id in planet_preset.terrain_ids:
 		var terrain_id: StringName = raw_terrain_id as StringName
-		var terrain: TerrainDef = _terrain_catalog.get_by_id(terrain_id)
+		var terrain: TerrainDef = _terrain_catalog.get_by_id_or_null(terrain_id)
 		if terrain != null:
 			_enabled_terrain_ids[terrain.numeric_id] = true
 

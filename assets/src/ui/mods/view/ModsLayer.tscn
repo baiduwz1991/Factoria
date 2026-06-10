@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/src/ui/mods/view/ModsLayer.gd" id="1_mods_layer"]
+
+[node name="ModsLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mods_layer")
+list_path = NodePath("SafeArea/Panel/Content/Scroll/ModList")
+status_label_path = NodePath("SafeArea/Panel/Content/StatusLabel")
+reload_button_path = NodePath("SafeArea/Panel/Content/ActionRow/ReloadButton")
+back_button_path = NodePath("SafeArea/Panel/Content/ActionRow/BackButton")
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 72.0
+offset_top = 56.0
+offset_right = -72.0
+offset_bottom = -56.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="SafeArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0627451, 0.0784314, 0.109804, 1)
+
+[node name="Panel" type="PanelContainer" parent="SafeArea"]
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="SafeArea/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="SafeArea/Panel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "MODS"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="SafeArea/Panel/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(720, 360)
+
+[node name="ModList" type="VBoxContainer" parent="SafeArea/Panel/Content/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="StatusLabel" type="Label" parent="SafeArea/Panel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = ""
+
+[node name="ActionRow" type="HBoxContainer" parent="SafeArea/Panel/Content"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="ReloadButton" type="Button" parent="SafeArea/Panel/Content/ActionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(160, 50)
+text = "Reload"
+
+[node name="BackButton" type="Button" parent="SafeArea/Panel/Content/ActionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(160, 50)
+text = "Back"

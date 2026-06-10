@@ -1,0 +1,81 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://factoria.local/schemas/terrain_visuals.schema.json",
+	"title": "Factoria Terrain Visual Definitions",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"additionalProperties": false,
+		"required": ["terrain_id", "priority", "is_water", "textures"],
+		"properties": {
+			"terrain_id": {
+				"$ref": "#/$defs/stable_id"
+			},
+			"priority": {
+				"type": "integer",
+				"description": "Lower priority draws underneath higher priority terrain in mixed cells."
+			},
+			"is_water": {
+				"type": "boolean"
+			},
+			"foam_texture": {
+				"type": "string"
+			},
+			"textures": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["base_1x1"],
+				"properties": {
+					"base_1x1": {
+						"type": "string"
+					},
+					"base_2x2": {
+						"type": "string"
+					},
+					"base_4x4": {
+						"type": "string"
+					},
+					"overlay": {
+						"type": "string"
+					},
+					"shore_shadow": {
+						"type": "string"
+					},
+					"shore": {
+						"type": "string"
+					},
+					"shore_combined": {
+						"type": "string"
+					},
+					"animated_base_1x1": {
+						"type": "string"
+					},
+					"animated_base_2x2": {
+						"type": "string"
+					},
+					"animated_base_4x4": {
+						"type": "string"
+					},
+					"animated_overlay": {
+						"type": "string"
+					},
+					"animated_shore_shadow": {
+						"type": "string"
+					},
+					"animated_shore": {
+						"type": "string"
+					},
+					"animated_shore_combined": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	},
+	"$defs": {
+		"stable_id": {
+			"type": "string",
+			"pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$"
+		}
+	}
+}

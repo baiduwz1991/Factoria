@@ -1,0 +1,36 @@
+[
+	{
+		"id": "example.red_sand.red_desert",
+		"aliases": ["red_desert"],
+		"label": "Red Desert",
+		"description": "Example planet preset that enables the red sand terrain.",
+		"terrain_ids": [
+			"core.base_soil",
+			"core.dirt",
+			"core.sand",
+			"example.red_sand.red_sand",
+			"core.water",
+			"core.deep_water"
+		],
+		"decorative_ids": ["sand_decal", "small_sand_rock"],
+		"resource_ids": ["iron_ore", "copper_ore", "coal", "stone"],
+		"entity_ids": ["big_sand_rock"],
+		"autoplace_controls": {
+			"water": 0.25,
+			"trees": 0.1,
+			"rocks": 1.2
+		},
+		"climate_controls": {
+			"aux": true,
+			"moisture": true,
+			"moisture_bias": -0.45
+		},
+		"surface_properties": {
+			"gravity": 10,
+			"pressure": 930,
+			"magnetic_field": 80,
+			"solar_power": 120,
+			"day_night_cycle": 420
+		}
+	}
+]

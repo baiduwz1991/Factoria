@@ -1,0 +1,85 @@
+[
+	{
+		"id": "core.standard",
+		"aliases": ["standard"],
+		"label": "Standard",
+		"description": "Balanced test planet with base soil, dirt, grass, sand, water, and deep water.",
+		"terrain_ids": ["core.base_soil", "core.dirt", "core.grass", "core.sand", "core.water", "core.deep_water"],
+		"decorative_ids": ["green_small_grass", "brown_carpet_grass", "small_rock"],
+		"resource_ids": ["iron_ore", "copper_ore", "coal", "stone", "crude_oil"],
+		"entity_ids": ["fish", "big_rock"],
+		"autoplace_controls": {
+			"water": 1.0,
+			"trees": 1.0,
+			"rocks": 1.0,
+			"enemy_base": 1.0
+		},
+		"climate_controls": {
+			"aux": true,
+			"moisture": true
+		},
+		"surface_properties": {
+			"gravity": 10,
+			"pressure": 1000,
+			"magnetic_field": 90,
+			"solar_power": 100,
+			"day_night_cycle": 420
+		}
+	},
+	{
+		"id": "core.rich_resource",
+		"aliases": ["rich_resource"],
+		"label": "Rich Resource",
+		"description": "Resource-rich planet for fast factory validation.",
+		"terrain_ids": ["core.base_soil", "core.dirt", "core.grass", "core.sand", "core.water", "core.deep_water"],
+		"decorative_ids": ["green_small_grass", "small_rock"],
+		"resource_ids": ["iron_ore", "copper_ore", "coal", "stone", "crude_oil", "uranium_ore"],
+		"entity_ids": ["fish", "big_rock"],
+		"autoplace_controls": {
+			"water": 0.9,
+			"trees": 0.8,
+			"rocks": 1.0,
+			"enemy_base": 0.6,
+			"resources": 1.8
+		},
+		"climate_controls": {
+			"aux": true,
+			"moisture": true
+		},
+		"surface_properties": {
+			"gravity": 10,
+			"pressure": 1000,
+			"magnetic_field": 90,
+			"solar_power": 100,
+			"day_night_cycle": 420
+		}
+	},
+	{
+		"id": "core.desert",
+		"aliases": ["desert"],
+		"label": "Desert",
+		"description": "Drier planet with less water and vegetation.",
+		"terrain_ids": ["core.base_soil", "core.dirt", "core.sand", "core.water", "core.deep_water"],
+		"decorative_ids": ["sand_decal", "small_sand_rock", "dry_bush"],
+		"resource_ids": ["iron_ore", "copper_ore", "coal", "stone", "crude_oil"],
+		"entity_ids": ["big_sand_rock", "huge_rock"],
+		"autoplace_controls": {
+			"water": 0.35,
+			"trees": 0.2,
+			"rocks": 1.3,
+			"enemy_base": 1.1
+		},
+		"climate_controls": {
+			"aux": true,
+			"moisture": true,
+			"moisture_bias": -0.35
+		},
+		"surface_properties": {
+			"gravity": 10,
+			"pressure": 950,
+			"magnetic_field": 90,
+			"solar_power": 115,
+			"day_night_cycle": 420
+		}
+	}
+]

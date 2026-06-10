@@ -1,0 +1,11 @@
+[
+	{
+		"id": "example.red_sand.red_sand",
+		"aliases": ["red_sand"],
+		"display_name": "Red Sand",
+		"map_color": "0xb45a3a",
+		"walkable": true,
+		"buildable": true,
+		"is_water": false
+	}
+]

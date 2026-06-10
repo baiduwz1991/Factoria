@@ -15,13 +15,6 @@ public partial class TerrainChunkCanvas : Node2D
     private const float FreezeWaterAnimationBelowScreenPixels = 4.0f;
     private const float SlowWaterAnimationBelowScreenPixels = 10.0f;
 
-    private const int VisualBaseSoil = 0;
-    private const int VisualDirt = 1;
-    private const int VisualGrass = 2;
-    private const int VisualSand = 3;
-    private const int VisualWater = 4;
-    private const int VisualDeepWater = 5;
-
     private static readonly Dictionary<int, Texture2D> BaseTextures = new();
     private static readonly Dictionary<int, Texture2D> BasePatch2Textures = new();
     private static readonly Dictionary<int, Texture2D> BasePatch4Textures = new();
@@ -36,6 +29,7 @@ public partial class TerrainChunkCanvas : Node2D
     private static readonly Dictionary<int, Texture2D[]> AnimatedShoreShadowTextures = new();
     private static readonly Dictionary<int, Texture2D[]> AnimatedShoreTextures = new();
     private static readonly Dictionary<int, Texture2D[]> AnimatedShoreCombinedTextures = new();
+    private static TerrainVisualSpec VisualSpec = TerrainVisualSpec.CreateDefault();
     private static Texture2D WaterFoamTexture;
     private static bool TexturesLoaded;
     private static ulong CachedWaterAnimationStep = ulong.MaxValue;
@@ -59,6 +53,27 @@ public partial class TerrainChunkCanvas : Node2D
     {
         TextureFilter = TextureFilterEnum.LinearWithMipmaps;
         SetProcess(_hasAnimatedWater);
+    }
+
+    public static void ConfigureTerrainVisualSpec(TerrainVisualSpec visualSpec)
+    {
+        VisualSpec = visualSpec ?? TerrainVisualSpec.CreateDefault();
+        TexturesLoaded = false;
+        BaseTextures.Clear();
+        BasePatch2Textures.Clear();
+        BasePatch4Textures.Clear();
+        OverlayTextures.Clear();
+        ShoreShadowTextures.Clear();
+        ShoreTextures.Clear();
+        ShoreCombinedTextures.Clear();
+        AnimatedBaseTextures.Clear();
+        AnimatedBasePatch2Textures.Clear();
+        AnimatedBasePatch4Textures.Clear();
+        AnimatedOverlayTextures.Clear();
+        AnimatedShoreShadowTextures.Clear();
+        AnimatedShoreTextures.Clear();
+        AnimatedShoreCombinedTextures.Clear();
+        WaterFoamTexture = null;
     }
 
     public void Configure(GodotDictionary visualData)
@@ -104,6 +119,7 @@ public partial class TerrainChunkCanvas : Node2D
         DrawBasePatchCommands();
         DrawCommands(_overlayCommands, GetOverlayTextureForDraw);
         DrawCommands(_shoreCommands, GetShoreCombinedTextureForDraw);
+        DrawCommands(_foamCommands, _ => WaterFoamTexture);
     }
 
     private void DrawBaseTiles()
@@ -152,18 +168,8 @@ public partial class TerrainChunkCanvas : Node2D
     private void DrawBaseTextureRegion(Texture2D texture, int localX, int localY, int cycle)
     {
         int safeCycle = PosMod(cycle, CycleSize * CycleSize);
-        Rect2 destination = new Rect2(
-            localX * _tileSize,
-            localY * _tileSize,
-            _tileSize,
-            _tileSize
-        );
-        Rect2 source = new Rect2(
-            safeCycle * SourceTileSize,
-            0,
-            SourceTileSize,
-            SourceTileSize
-        );
+        Rect2 destination = new Rect2(localX * _tileSize, localY * _tileSize, _tileSize, _tileSize);
+        Rect2 source = new Rect2(safeCycle * SourceTileSize, 0, SourceTileSize, SourceTileSize);
         DrawTextureRectRegion(texture, destination, source);
     }
 
@@ -205,12 +211,7 @@ public partial class TerrainChunkCanvas : Node2D
 
     private void DrawTextureRegion(Texture2D texture, int localX, int localY, int mask, int cycle)
     {
-        Rect2 destination = new Rect2(
-            localX * _tileSize,
-            localY * _tileSize,
-            _tileSize,
-            _tileSize
-        );
+        Rect2 destination = new Rect2(localX * _tileSize, localY * _tileSize, _tileSize, _tileSize);
         Rect2 source = new Rect2(
             mask * SourceTileSize,
             PosMod(cycle, CycleSize * CycleSize) * SourceTileSize,
@@ -253,7 +254,7 @@ public partial class TerrainChunkCanvas : Node2D
 
     private bool HasAnimatedWaterContent()
     {
-        if (_shoreCommands.Length > 0)
+        if (_shoreCommands.Length > 0 || _foamCommands.Length > 0)
             return true;
 
         foreach (int visual in _baseVisuals)
@@ -262,10 +263,7 @@ public partial class TerrainChunkCanvas : Node2D
                 return true;
         }
 
-        if (HasAnimatedWaterCommand(_basePatchCommands) || HasAnimatedWaterCommand(_overlayCommands))
-            return true;
-
-        return false;
+        return HasAnimatedWaterCommand(_basePatchCommands) || HasAnimatedWaterCommand(_overlayCommands);
     }
 
     private static bool HasAnimatedWaterCommand(int[] commands)
@@ -280,7 +278,7 @@ public partial class TerrainChunkCanvas : Node2D
 
     private static bool IsAnimatedWaterVisual(int visual)
     {
-        return visual == VisualWater || visual == VisualDeepWater;
+        return VisualSpec.IsWaterVisual(visual);
     }
 
     private static Texture2D GetBaseTexture(int visual)
@@ -312,7 +310,8 @@ public partial class TerrainChunkCanvas : Node2D
             Patch4Size => AnimatedBasePatch4Textures,
             _ => null
         };
-        return GetAnimatedTexture(animatedTextures, visual, _waterAnimationFrame) ?? GetBasePatchTexture(visual, patchSize);
+        return GetAnimatedTexture(animatedTextures, visual, _waterAnimationFrame)
+            ?? GetBasePatchTexture(visual, patchSize);
     }
 
     private static Texture2D GetOverlayTexture(int visual)
@@ -332,7 +331,8 @@ public partial class TerrainChunkCanvas : Node2D
 
     private Texture2D GetShoreShadowTextureForDraw(int visual)
     {
-        return GetAnimatedTexture(AnimatedShoreShadowTextures, visual, _waterAnimationFrame) ?? GetShoreShadowTexture(visual);
+        return GetAnimatedTexture(AnimatedShoreShadowTextures, visual, _waterAnimationFrame)
+            ?? GetShoreShadowTexture(visual);
     }
 
     private static Texture2D GetShoreTexture(int visual)
@@ -354,7 +354,8 @@ public partial class TerrainChunkCanvas : Node2D
     {
         return GetAnimatedTexture(AnimatedShoreCombinedTextures, visual, _waterAnimationFrame)
             ?? GetShoreCombinedTexture(visual)
-            ?? GetShoreTextureForDraw(visual);
+            ?? GetShoreTextureForDraw(visual)
+            ?? GetShoreShadowTextureForDraw(visual);
     }
 
     private static Texture2D GetAnimatedTexture(Dictionary<int, Texture2D[]> textures, int visual, int frame)
@@ -372,112 +373,102 @@ public partial class TerrainChunkCanvas : Node2D
             return;
         TexturesLoaded = true;
 
-        LoadBaseTextures();
-        LoadBasePatchTextures();
-        LoadOverlayTextures();
-        LoadShoreTextures();
-        LoadWaterEffects();
+        foreach (int visual in VisualSpec.VisualIndices)
+        {
+            TerrainVisualTextureSpec textures = VisualSpec.GetTextureSpec(visual);
+            BaseTextures[visual] = LoadTexture(textures.Base1X1, true);
+            BasePatch2Textures[visual] = LoadTexture(textures.Base2X2, false);
+            BasePatch4Textures[visual] = LoadTexture(textures.Base4X4, false);
+            OverlayTextures[visual] = LoadTexture(textures.Overlay, false);
+            ShoreShadowTextures[visual] = LoadTexture(textures.ShoreShadow, false);
+            ShoreTextures[visual] = LoadTexture(textures.Shore, false);
+            ShoreCombinedTextures[visual] = LoadTexture(textures.ShoreCombined, false);
+            LoadAnimatedTexturesForVisual(visual, textures);
+        }
+
+        WaterFoamTexture = LoadTexture(VisualSpec.FoamTexturePath, false);
     }
 
-    private static void LoadBaseTextures()
+    private static void LoadAnimatedTexturesForVisual(int visual, TerrainVisualTextureSpec textures)
     {
-        BaseTextures[VisualBaseSoil] = LoadTexture("res://assets/texture/terrain/base_soil/base/1x1.png");
-        BaseTextures[VisualDirt] = LoadTexture("res://assets/texture/terrain/dirt/base/1x1.png");
-        BaseTextures[VisualGrass] = LoadTexture("res://assets/texture/terrain/grass/base/1x1.png");
-        BaseTextures[VisualSand] = LoadTexture("res://assets/texture/terrain/sand/base/1x1.png");
-        BaseTextures[VisualWater] = LoadTexture("res://assets/texture/terrain/water/base/1x1.png");
-        BaseTextures[VisualDeepWater] = LoadTexture("res://assets/texture/terrain/deep_water/base/1x1.png");
-
-        AnimatedBaseTextures[VisualWater] = LoadTextureFrames("res://assets/texture/terrain/water/base/anim_11/1x1/water_base_1x1_{0:D2}.png");
-        AnimatedBaseTextures[VisualDeepWater] = LoadTextureFrames("res://assets/texture/terrain/deep_water/base/anim_11/1x1/deep_water_base_1x1_{0:D2}.png");
+        AnimatedBaseTextures[visual] = LoadTextureFrames(textures.AnimatedBase1X1);
+        AnimatedBasePatch2Textures[visual] = LoadTextureFrames(textures.AnimatedBase2X2);
+        AnimatedBasePatch4Textures[visual] = LoadTextureFrames(textures.AnimatedBase4X4);
+        AnimatedOverlayTextures[visual] = LoadTextureFrames(textures.AnimatedOverlay);
+        AnimatedShoreShadowTextures[visual] = LoadTextureFrames(textures.AnimatedShoreShadow);
+        AnimatedShoreTextures[visual] = LoadTextureFrames(textures.AnimatedShore);
+        AnimatedShoreCombinedTextures[visual] = LoadTextureFrames(textures.AnimatedShoreCombined);
     }
 
-    private static void LoadBasePatchTextures()
+    private static Texture2D LoadTexture(string path, bool required)
     {
-        BasePatch2Textures[VisualBaseSoil] = LoadTexture("res://assets/texture/terrain/base_soil/base/2x2/2x2.png");
-        BasePatch2Textures[VisualDirt] = LoadTexture("res://assets/texture/terrain/dirt/base/2x2/2x2.png");
-        BasePatch2Textures[VisualGrass] = LoadTexture("res://assets/texture/terrain/grass/base/2x2/2x2.png");
-        BasePatch2Textures[VisualSand] = LoadTexture("res://assets/texture/terrain/sand/base/2x2/2x2.png");
-        BasePatch2Textures[VisualWater] = LoadTexture("res://assets/texture/terrain/water/base/2x2/2x2.png");
-        BasePatch2Textures[VisualDeepWater] = LoadTexture("res://assets/texture/terrain/deep_water/base/2x2/2x2.png");
+        if (string.IsNullOrEmpty(path))
+            return null;
 
-        BasePatch4Textures[VisualBaseSoil] = LoadTexture("res://assets/texture/terrain/base_soil/base/4x4/4x4.png");
-        BasePatch4Textures[VisualDirt] = LoadTexture("res://assets/texture/terrain/dirt/base/4x4/4x4.png");
-        BasePatch4Textures[VisualGrass] = LoadTexture("res://assets/texture/terrain/grass/base/4x4/4x4.png");
-        BasePatch4Textures[VisualSand] = LoadTexture("res://assets/texture/terrain/sand/base/4x4/4x4.png");
-        BasePatch4Textures[VisualWater] = LoadTexture("res://assets/texture/terrain/water/base/4x4/4x4.png");
-        BasePatch4Textures[VisualDeepWater] = LoadTexture("res://assets/texture/terrain/deep_water/base/4x4/4x4.png");
-
-        AnimatedBasePatch2Textures[VisualWater] = LoadTextureFrames("res://assets/texture/terrain/water/base/anim_11/2x2/water_base_2x2_{0:D2}.png");
-        AnimatedBasePatch4Textures[VisualWater] = LoadTextureFrames("res://assets/texture/terrain/water/base/anim_11/4x4/water_base_4x4_{0:D2}.png");
-        AnimatedBasePatch2Textures[VisualDeepWater] = LoadTextureFrames("res://assets/texture/terrain/deep_water/base/anim_11/2x2/deep_water_base_2x2_{0:D2}.png");
-        AnimatedBasePatch4Textures[VisualDeepWater] = LoadTextureFrames("res://assets/texture/terrain/deep_water/base/anim_11/4x4/deep_water_base_4x4_{0:D2}.png");
-    }
-
-    private static void LoadOverlayTextures()
-    {
-        OverlayTextures[VisualDirt] = LoadTexture("res://assets/texture/terrain/dirt/overlay/dual16.png");
-        OverlayTextures[VisualGrass] = LoadTexture("res://assets/texture/terrain/grass/overlay/dual16.png");
-        OverlayTextures[VisualSand] = LoadTexture("res://assets/texture/terrain/sand/overlay/dual16.png");
-        OverlayTextures[VisualWater] = LoadTexture("res://assets/texture/terrain/water/overlay/dual16.png");
-        OverlayTextures[VisualDeepWater] = LoadTexture("res://assets/texture/terrain/deep_water/overlay/dual16.png");
-
-        AnimatedOverlayTextures[VisualWater] = LoadTextureFrames("res://assets/texture/terrain/water/overlay/anim_11/water_overlay_dual16_{0:D2}.png");
-        AnimatedOverlayTextures[VisualDeepWater] = LoadTextureFrames("res://assets/texture/terrain/deep_water/overlay/anim_11/deep_water_overlay_dual16_{0:D2}.png");
-    }
-
-    private static void LoadShoreTextures()
-    {
-        ShoreShadowTextures[VisualBaseSoil] = LoadTexture("res://assets/texture/terrain/base_soil/shore/water_shadow_dual16.png");
-        ShoreShadowTextures[VisualDirt] = LoadTexture("res://assets/texture/terrain/dirt/shore/water_shadow_dual16.png");
-        ShoreShadowTextures[VisualGrass] = LoadTexture("res://assets/texture/terrain/grass/shore/water_shadow_dual16.png");
-        ShoreShadowTextures[VisualSand] = LoadTexture("res://assets/texture/terrain/sand/shore/water_shadow_dual16.png");
-
-        ShoreTextures[VisualBaseSoil] = LoadTexture("res://assets/texture/terrain/base_soil/shore/water_dual16.png");
-        ShoreTextures[VisualDirt] = LoadTexture("res://assets/texture/terrain/dirt/shore/water_dual16.png");
-        ShoreTextures[VisualGrass] = LoadTexture("res://assets/texture/terrain/grass/shore/water_dual16.png");
-        ShoreTextures[VisualSand] = LoadTexture("res://assets/texture/terrain/sand/shore/water_dual16.png");
-
-        ShoreCombinedTextures[VisualBaseSoil] = LoadTexture("res://assets/texture/terrain/base_soil/shore/water_shore_dual16.png");
-        ShoreCombinedTextures[VisualDirt] = LoadTexture("res://assets/texture/terrain/dirt/shore/water_shore_dual16.png");
-        ShoreCombinedTextures[VisualGrass] = LoadTexture("res://assets/texture/terrain/grass/shore/water_shore_dual16.png");
-        ShoreCombinedTextures[VisualSand] = LoadTexture("res://assets/texture/terrain/sand/shore/water_shore_dual16.png");
-
-        AnimatedShoreShadowTextures[VisualBaseSoil] = LoadTextureFrames("res://assets/texture/terrain/base_soil/shore/anim_11/water_shadow_dual16_{0:D2}.png");
-        AnimatedShoreShadowTextures[VisualDirt] = LoadTextureFrames("res://assets/texture/terrain/dirt/shore/anim_11/water_shadow_dual16_{0:D2}.png");
-        AnimatedShoreShadowTextures[VisualGrass] = LoadTextureFrames("res://assets/texture/terrain/grass/shore/anim_11/water_shadow_dual16_{0:D2}.png");
-        AnimatedShoreShadowTextures[VisualSand] = LoadTextureFrames("res://assets/texture/terrain/sand/shore/anim_11/water_shadow_dual16_{0:D2}.png");
-
-        AnimatedShoreTextures[VisualBaseSoil] = LoadTextureFrames("res://assets/texture/terrain/base_soil/shore/anim_11/water_dual16_{0:D2}.png");
-        AnimatedShoreTextures[VisualDirt] = LoadTextureFrames("res://assets/texture/terrain/dirt/shore/anim_11/water_dual16_{0:D2}.png");
-        AnimatedShoreTextures[VisualGrass] = LoadTextureFrames("res://assets/texture/terrain/grass/shore/anim_11/water_dual16_{0:D2}.png");
-        AnimatedShoreTextures[VisualSand] = LoadTextureFrames("res://assets/texture/terrain/sand/shore/anim_11/water_dual16_{0:D2}.png");
-
-        AnimatedShoreCombinedTextures[VisualBaseSoil] = LoadTextureFrames("res://assets/texture/terrain/base_soil/shore/anim_11/water_shore_dual16_{0:D2}.png");
-        AnimatedShoreCombinedTextures[VisualDirt] = LoadTextureFrames("res://assets/texture/terrain/dirt/shore/anim_11/water_shore_dual16_{0:D2}.png");
-        AnimatedShoreCombinedTextures[VisualGrass] = LoadTextureFrames("res://assets/texture/terrain/grass/shore/anim_11/water_shore_dual16_{0:D2}.png");
-        AnimatedShoreCombinedTextures[VisualSand] = LoadTextureFrames("res://assets/texture/terrain/sand/shore/anim_11/water_shore_dual16_{0:D2}.png");
-    }
-
-    private static void LoadWaterEffects()
-    {
-        WaterFoamTexture = LoadTexture("res://assets/texture/terrain/water/effect/foam_dual16.png");
-    }
-
-    private static Texture2D LoadTexture(string path)
-    {
         Texture2D texture = GD.Load<Texture2D>(path);
-        if (texture == null)
+        if (texture != null)
+            return texture;
+
+        Image image = Image.LoadFromFile(path);
+        if (image != null && !image.IsEmpty())
+            return ImageTexture.CreateFromImage(image);
+
+        if (required)
+            GD.PushError($"Required terrain texture missing: {path}");
+        else
             GD.PushWarning($"Terrain texture missing: {path}");
-        return texture;
+        return null;
     }
 
     private static Texture2D[] LoadTextureFrames(string pathFormat)
     {
+        if (string.IsNullOrEmpty(pathFormat))
+            return System.Array.Empty<Texture2D>();
+
         Texture2D[] frames = new Texture2D[WaterAnimationFrameCount];
         for (int frame = 0; frame < WaterAnimationFrameCount; frame++)
-            frames[frame] = LoadTexture(string.Format(pathFormat, frame));
+        {
+            frames[frame] = LoadTexture(string.Format(pathFormat, frame), false);
+        }
         return frames;
+    }
+
+    private int GetWaterAnimationFrameForDraw()
+    {
+        double framesPerSecond = GetWaterAnimationFramesPerSecondForDraw();
+        if (framesPerSecond <= 0.0)
+            return 0;
+        return GetWaterAnimationFrame(framesPerSecond);
+    }
+
+    private double GetWaterAnimationFramesPerSecondForDraw()
+    {
+        float screenTileSize = GetScreenTileSize();
+        if (screenTileSize < FreezeWaterAnimationBelowScreenPixels)
+            return 0.0;
+        if (screenTileSize < SlowWaterAnimationBelowScreenPixels)
+            return MidWaterAnimationFramesPerSecond;
+        return NearWaterAnimationFramesPerSecond;
+    }
+
+    private float GetScreenTileSize()
+    {
+        Viewport viewport = GetViewport();
+        Camera2D camera = viewport?.GetCamera2D();
+        float zoom = camera != null ? camera.Zoom.X : 1.0f;
+        return _tileSize * zoom;
+    }
+
+    private static int GetWaterAnimationFrame(double framesPerSecond)
+    {
+        ulong step = (ulong)(Time.GetTicksMsec() / System.Math.Max(1.0, 1000.0 / framesPerSecond));
+        if (step == CachedWaterAnimationStep && System.Math.Abs(framesPerSecond - CachedWaterAnimationFramesPerSecond) < 0.001)
+            return CachedWaterAnimationFrame;
+
+        CachedWaterAnimationStep = step;
+        CachedWaterAnimationFramesPerSecond = framesPerSecond;
+        CachedWaterAnimationFrame = (int)(step % WaterAnimationFrameCount);
+        return CachedWaterAnimationFrame;
     }
 
     private static int ReadInt(GodotDictionary data, string key, int fallback)
@@ -494,43 +485,5 @@ public partial class TerrainChunkCanvas : Node2D
     {
         int result = value % modulo;
         return result < 0 ? result + modulo : result;
-    }
-
-    private int GetWaterAnimationFrameForDraw()
-    {
-        double framesPerSecond = GetWaterAnimationFramesPerSecondForDraw();
-        if (framesPerSecond <= 0.0)
-            return 0;
-        return GetWaterAnimationFrame(framesPerSecond);
-    }
-
-    private double GetWaterAnimationFramesPerSecondForDraw()
-    {
-        float screenTileSize = GetApproximateScreenTileSize();
-        if (screenTileSize < FreezeWaterAnimationBelowScreenPixels)
-            return 0.0;
-        if (screenTileSize < SlowWaterAnimationBelowScreenPixels)
-            return MidWaterAnimationFramesPerSecond;
-        return NearWaterAnimationFramesPerSecond;
-    }
-
-    private float GetApproximateScreenTileSize()
-    {
-        Transform2D transform = GetGlobalTransformWithCanvas();
-        float scaleX = transform.X.Length();
-        float scaleY = transform.Y.Length();
-        return _tileSize * (scaleX + scaleY) * 0.5f;
-    }
-
-    private static int GetWaterAnimationFrame(double framesPerSecond)
-    {
-        ulong step = (ulong)System.Math.Floor(Time.GetTicksMsec() * framesPerSecond / 1000.0);
-        if (step == CachedWaterAnimationStep && System.Math.Abs(framesPerSecond - CachedWaterAnimationFramesPerSecond) < 0.001)
-            return CachedWaterAnimationFrame;
-
-        CachedWaterAnimationStep = step;
-        CachedWaterAnimationFramesPerSecond = framesPerSecond;
-        CachedWaterAnimationFrame = (int)(step % WaterAnimationFrameCount);
-        return CachedWaterAnimationFrame;
     }
 }
