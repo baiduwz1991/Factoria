@@ -5,8 +5,6 @@ signal preload_progress_changed(snapshot: Dictionary)
 signal preload_completed(snapshot: Dictionary)
 
 const WATER_RECT_STRIDE: int = 4
-const VISUAL_WATER: int = 4
-const VISUAL_DEEP_WATER: int = 5
 const VISUAL_COMMAND_STRIDE: int = 5
 const INVALID_CHUNK_COORD: Vector2i = Vector2i(2147483647, 2147483647)
 const CSHARP_RUNTIME_MANAGER_PATH: String = "/root/CSharpRuntimeManager"
@@ -555,7 +553,7 @@ func _create_water_collision_body_from_visual_data(visual_data: Dictionary) -> S
 	var chunk_coord: Vector2i = visual_data.get("chunk_coord", Vector2i.ZERO) as Vector2i
 	var chunk_size: int = maxi(int(visual_data.get("chunk_size", 1)), 1)
 	var tile_size: int = maxi(int(visual_data.get("tile_size", _planet_controller.get_tile_size())), 1)
-	var base_visuals: PackedInt32Array = visual_data.get("base_visuals", PackedInt32Array())
+	var water_rects: PackedInt32Array = visual_data.get("water_rects", PackedInt32Array())
 	var water_edge_commands: PackedInt32Array = visual_data.get("foam_commands", PackedInt32Array())
 	var body: StaticBody2D = StaticBody2D.new()
 	body.name = "WaterCollision_%d_%d" % [chunk_coord.x, chunk_coord.y]
@@ -563,7 +561,7 @@ func _create_water_collision_body_from_visual_data(visual_data: Dictionary) -> S
 	body.collision_mask = water_collision_mask
 	add_child(body)
 
-	_add_pure_water_collision_rects(body, chunk_coord, chunk_size, tile_size, base_visuals)
+	_add_pure_water_collision_rects(body, chunk_coord, chunk_size, tile_size, water_rects)
 	_add_water_edge_collision_polygons(body, chunk_coord, chunk_size, tile_size, water_edge_commands)
 
 	if body.get_child_count() <= 0:
@@ -577,40 +575,16 @@ func _add_pure_water_collision_rects(
 	chunk_coord: Vector2i,
 	chunk_size: int,
 	tile_size: int,
-	base_visuals: PackedInt32Array
+	water_rects: PackedInt32Array
 ) -> void:
-	if base_visuals.size() < chunk_size * chunk_size:
-		return
-
-	var open_rects: Dictionary = {}
-	for local_y in range(chunk_size):
-		var next_open_rects: Dictionary = {}
-		var local_x: int = 0
-		while local_x < chunk_size:
-			while local_x < chunk_size and not _is_water_visual(base_visuals[local_y * chunk_size + local_x]):
-				local_x += 1
-			if local_x >= chunk_size:
-				break
-
-			var run_start_x: int = local_x
-			while local_x < chunk_size and _is_water_visual(base_visuals[local_y * chunk_size + local_x]):
-				local_x += 1
-
-			var run_width: int = local_x - run_start_x
-			var run_key: String = "%d:%d" % [run_start_x, run_width]
-			if open_rects.has(run_key):
-				var previous_rect: Rect2i = open_rects[run_key] as Rect2i
-				next_open_rects[run_key] = Rect2i(previous_rect.position, previous_rect.size + Vector2i(0, 1))
-			else:
-				next_open_rects[run_key] = Rect2i(run_start_x, local_y, run_width, 1)
-
-		for key in open_rects.keys():
-			if not next_open_rects.has(key):
-				_add_water_collision_rect(body, chunk_coord, chunk_size, tile_size, open_rects[key] as Rect2i)
-		open_rects = next_open_rects
-
-	for rect in open_rects.values():
-		_add_water_collision_rect(body, chunk_coord, chunk_size, tile_size, rect as Rect2i)
+	for index in range(0, water_rects.size() - WATER_RECT_STRIDE + 1, WATER_RECT_STRIDE):
+		var rect := Rect2i(
+			water_rects[index],
+			water_rects[index + 1],
+			water_rects[index + 2],
+			water_rects[index + 3]
+		)
+		_add_water_collision_rect(body, chunk_coord, chunk_size, tile_size, rect)
 
 
 func _add_water_collision_rect(
@@ -712,10 +686,6 @@ func _get_water_collision_polygons(mask: int, size: float) -> Array[PackedVector
 			return [PackedVector2Array([top_mid, top_right, bottom_right, bottom_left, left_mid])]
 		_:
 			return []
-
-
-func _is_water_visual(visual: int) -> bool:
-	return visual == VISUAL_WATER or visual == VISUAL_DEEP_WATER
 
 
 func _unload_missing_chunks(required_coords: Array[Vector2i]) -> void:
