@@ -58,8 +58,7 @@ text = "返回主菜单"
 [node name="SaveButton" type="Button" parent="Mask/Panel/Content"]
 custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
-disabled = true
-text = "保存存档（预留）"
+text = "保存存档"
 
 [node name="ReloadButton" type="Button" parent="Mask/Panel/Content"]
 custom_minimum_size = Vector2(280, 44)

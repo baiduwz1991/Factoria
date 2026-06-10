@@ -18,6 +18,7 @@ signal slot_meta_changed(slot_meta_list: Array[Dictionary])
 var _model: SaveModel = SaveModel.new()
 var _save_manager: Node = null
 var _save_loading_ui_instance_id: int = -1
+var _save_loading_overlay_allowed: bool = true
 #endregion
 
 #region 对外接口 - 标识
@@ -45,14 +46,18 @@ func on_release() -> void:
 #endregion
 
 #region 对外接口 - 存读档
-func request_save_slot(slot_id: int, back: Callable = Callable()) -> bool:
+func request_save_slot(slot_id: int, back: Callable = Callable(), options: Dictionary = {}) -> bool:
 	_ensure_save_participant_controllers()
 	var manager: Node = _ensure_save_manager()
 	if manager == null:
 		return _fail_with_missing_save_manager(&"save", back)
 
+	_save_loading_overlay_allowed = bool(options.get("show_loading_overlay", true))
 	_prepare_slot_runtime(slot_id)
-	return bool(manager.call("request_save", slot_id, back))
+	var started: bool = bool(manager.call("request_save", slot_id, back))
+	if not started:
+		_save_loading_overlay_allowed = true
+	return started
 
 
 func request_load_slot(slot_id: int, back: Callable = Callable()) -> bool:
@@ -211,6 +216,11 @@ func _ensure_save_participant_controllers() -> void:
 		func() -> BaseController:
 			return WorldTimeController.new()
 	)
+	ControllerManager.get_or_register_controller(
+		PlayerController.CONTROLLER_ID,
+		func() -> BaseController:
+			return PlayerController.new()
+	)
 
 
 func _bind_save_manager_signals() -> void:
@@ -281,6 +291,10 @@ func _emit_back(back: Callable, payload: Dictionary) -> void:
 
 func _prepare_slot_runtime(slot_id: int) -> void:
 	_model.apply_runtime_snapshot({"current_slot_id": slot_id})
+	for controller_id in ControllerManager.list_controller_ids():
+		var controller: BaseController = ControllerManager.get_controller(controller_id)
+		if controller != null and controller.has_method("prepare_save_slot"):
+			controller.call("prepare_save_slot", slot_id)
 	_emit_runtime_update({})
 
 
@@ -293,10 +307,12 @@ func _fail_with_missing_save_manager(phase: StringName, back: Callable) -> bool:
 func _sync_save_loading_overlay() -> void:
 	var is_saving: bool = _model.get_is_saving()
 	var is_loading: bool = _model.get_is_loading()
-	if is_saving and not is_loading:
+	if is_saving and not is_loading and _save_loading_overlay_allowed:
 		_open_save_loading_overlay()
 		return
 	_close_save_loading_overlay()
+	if not is_saving:
+		_save_loading_overlay_allowed = true
 
 
 func _open_save_loading_overlay() -> void:

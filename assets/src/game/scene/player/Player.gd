@@ -43,6 +43,17 @@ func get_facing() -> StringName:
 	return _facing
 
 
+func set_facing(value: StringName) -> void:
+	if not _is_valid_facing(value):
+		return
+	var previous_facing: StringName = _facing
+	_facing = value
+	animated_sprite.flip_h = false
+	if _facing != previous_facing:
+		facing_changed.emit(_facing)
+	_set_state(StringName("idle_%s" % _facing))
+
+
 func set_speed_multiplier(value: float) -> void:
 	_speed_multiplier = clampf(value, 1.0, 3.0)
 
@@ -154,3 +165,16 @@ func _get_animation_name(state: StringName) -> StringName:
 			return StringName("%s_right" % action)
 		_:
 			return state
+
+
+func _is_valid_facing(value: StringName) -> bool:
+	return [
+		&"down",
+		&"down_left",
+		&"down_right",
+		&"left",
+		&"right",
+		&"up",
+		&"up_left",
+		&"up_right"
+	].has(value)

@@ -4,6 +4,27 @@ extends RefCounted
 # 通用序列化辅助方法集合，被各 model / SaveData 复用以避免相同的 _parse_*
 # / *_to_array 方法在每个文件里重复实现。所有 API 均为 static，不持运行时状态。
 
+#region Vector2
+static func parse_vector2(value: Variant, fallback: Vector2 = Vector2.ZERO) -> Vector2:
+	if value is Vector2:
+		return value
+	if value is Dictionary:
+		var raw: Dictionary = value as Dictionary
+		return Vector2(float(raw.get("x", fallback.x)), float(raw.get("y", fallback.y)))
+	if value is Array:
+		var raw_array: Array = value as Array
+		if raw_array.size() >= 2:
+			return Vector2(float(raw_array[0]), float(raw_array[1]))
+	return fallback
+
+
+static func vector2_to_dict(value: Vector2) -> Dictionary:
+	return {
+		"x": value.x,
+		"y": value.y
+	}
+#endregion
+
 #region Vector2i
 static func parse_vector2i(value: Variant, fallback: Vector2i = Vector2i.ZERO) -> Vector2i:
 	if value is Vector2i:

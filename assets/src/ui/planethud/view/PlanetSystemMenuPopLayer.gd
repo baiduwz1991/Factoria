@@ -33,11 +33,16 @@ func on_ui_create(_params: Dictionary) -> void:
 
 
 func on_ui_open(_params: Dictionary) -> void:
-	save_button.disabled = true
+	set_save_busy(false)
 	reload_button.disabled = true
 #endregion
 
 #region 交互与显示
+func set_save_busy(is_busy: bool) -> void:
+	save_button.disabled = is_busy
+	save_button.text = "保存中..." if is_busy else "保存存档"
+
+
 func _on_close_pressed() -> void:
 	close_requested.emit()
 
