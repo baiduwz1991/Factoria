@@ -19,6 +19,16 @@ runtime and atlas-backed chunk canvas nodes.
   - `stone_ground`
 - `base_soil` is the default terrain and the landfill target.
 
+## Generation
+
+`MapChunkGenerator` keeps terrain variety through the autoplace rule list, but
+the climate fields that decide those rules are intentionally low frequency.
+Moisture, temperature, ridge, and variation noise should describe broad terrain
+regions first; detail and micro noise are only small boundary irregularities.
+When tuning terrain richness, prefer adding or adjusting autoplace rules before
+raising high-frequency noise, otherwise the world starts switching terrain types
+too often at normal gameplay zoom.
+
 ## Rendering
 
 The C# terrain code lives under `assets/src/csharp/terrain`. `TerrainRuntime`
