@@ -14,6 +14,7 @@ script = ExtResource("1_settings")
 title_label_path = NodePath("SafeArea/ContentPanel/ContentBox/TitleLabel")
 mode_option_path = NodePath("SafeArea/ContentPanel/ContentBox/ModeRow/WindowModeOption")
 resolution_option_path = NodePath("SafeArea/ContentPanel/ContentBox/ResolutionRow/ResolutionOption")
+fps_limit_option_path = NodePath("SafeArea/ContentPanel/ContentBox/FpsLimitRow/FpsLimitOption")
 apply_button_path = NodePath("SafeArea/ContentPanel/ContentBox/ActionRow/ApplyButton")
 back_button_path = NodePath("SafeArea/ContentPanel/ContentBox/ActionRow/BackButton")
 
@@ -83,6 +84,20 @@ theme_override_font_sizes/font_size = 24
 text = "分辨率"
 
 [node name="ResolutionOption" type="OptionButton" parent="SafeArea/ContentPanel/ContentBox/ResolutionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 44)
+
+[node name="FpsLimitRow" type="HBoxContainer" parent="SafeArea/ContentPanel/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="FpsLimitLabel" type="Label" parent="SafeArea/ContentPanel/ContentBox/FpsLimitRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "帧率上限"
+
+[node name="FpsLimitOption" type="OptionButton" parent="SafeArea/ContentPanel/ContentBox/FpsLimitRow"]
 layout_mode = 2
 custom_minimum_size = Vector2(260, 44)
 

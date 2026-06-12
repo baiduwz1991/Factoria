@@ -394,6 +394,13 @@ public sealed class TerrainVisualTextureSpec
     public string AnimatedShoreShadow { get; }
     public string AnimatedShore { get; }
     public string AnimatedShoreCombined { get; }
+    public bool HasAnimatedBase1X1 => HasPath(AnimatedBase1X1);
+    public bool HasAnimatedBase2X2 => HasPath(AnimatedBase2X2);
+    public bool HasAnimatedBase4X4 => HasPath(AnimatedBase4X4);
+    public bool HasAnimatedOverlay => HasPath(AnimatedOverlay);
+    public bool HasAnimatedShore => HasPath(AnimatedShoreShadow)
+        || HasPath(AnimatedShore)
+        || HasPath(AnimatedShoreCombined);
 
     private TerrainVisualTextureSpec(
         string base1X1,
@@ -500,5 +507,10 @@ public sealed class TerrainVisualTextureSpec
     private static string ReadString(GodotDictionary data, string key)
     {
         return data.TryGetValue(key, out Variant value) ? value.AsString() : string.Empty;
+    }
+
+    private static bool HasPath(string path)
+    {
+        return !string.IsNullOrEmpty(path);
     }
 }

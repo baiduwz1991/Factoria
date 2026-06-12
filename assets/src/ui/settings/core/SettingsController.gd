@@ -8,6 +8,7 @@ const DISPLAY_CONFIG_PATH: String = "user://display_settings.cfg"
 const WINDOW_MODE_WINDOWED: int = 0
 const WINDOW_MODE_FULLSCREEN: int = 1
 const DEFAULT_WINDOW_MODE: int = WINDOW_MODE_FULLSCREEN
+const DEFAULT_FPS_LIMIT_INDEX: int = 0
 
 const WINDOW_MODE_LABELS: Array[String] = [
 	"窗口",
@@ -20,6 +21,16 @@ const RESOLUTION_OPTIONS: Array[Vector2i] = [
 	Vector2i(1920, 1080),
 	Vector2i(2560, 1440),
 	Vector2i(3840, 2160)
+]
+
+const FPS_LIMIT_LABELS: Array[String] = [
+	"60 FPS",
+	"30 FPS"
+]
+
+const FPS_LIMIT_OPTIONS: Array[int] = [
+	60,
+	30
 ]
 #endregion
 
@@ -52,8 +63,10 @@ func load_and_apply_on_boot() -> void:
 		loaded_snapshot,
 		DEFAULT_WINDOW_MODE,
 		_pick_best_resolution_index(),
+		DEFAULT_FPS_LIMIT_INDEX,
 		WINDOW_MODE_LABELS.size(),
-		RESOLUTION_OPTIONS.size()
+		RESOLUTION_OPTIONS.size(),
+		FPS_LIMIT_OPTIONS.size()
 	))
 	_emit_runtime_state()
 
@@ -66,20 +79,27 @@ func get_resolution_labels() -> Array[String]:
 	return SettingsHelper.build_resolution_labels(RESOLUTION_OPTIONS)
 
 
+func get_fps_limit_labels() -> Array[String]:
+	return FPS_LIMIT_LABELS.duplicate()
+
+
 func get_display_snapshot() -> Dictionary:
 	return _model.get_runtime_snapshot().duplicate(true)
 
 
-func apply_and_save_display_settings(mode_index: int, resolution_index: int) -> bool:
+func apply_and_save_display_settings(mode_index: int, resolution_index: int, fps_limit_index: int) -> bool:
 	var snapshot: Dictionary = SettingsHelper.normalize_display_snapshot(
 		{
 			"mode_index": mode_index,
-			"resolution_index": resolution_index
+			"resolution_index": resolution_index,
+			"fps_limit_index": fps_limit_index
 		},
 		DEFAULT_WINDOW_MODE,
 		_pick_best_resolution_index(),
+		DEFAULT_FPS_LIMIT_INDEX,
 		WINDOW_MODE_LABELS.size(),
-		RESOLUTION_OPTIONS.size()
+		RESOLUTION_OPTIONS.size(),
+		FPS_LIMIT_OPTIONS.size()
 	)
 	_model.apply_runtime_snapshot(snapshot)
 	return _apply_and_emit_runtime_state(true)
@@ -105,7 +125,9 @@ func _apply_and_emit_runtime_state(save_to_disk: bool) -> bool:
 func _apply_snapshot_to_display(snapshot: Dictionary) -> void:
 	var mode_index: int = int(snapshot.get("mode_index", DEFAULT_WINDOW_MODE))
 	var resolution_index: int = int(snapshot.get("resolution_index", _pick_best_resolution_index()))
+	var fps_limit_index: int = int(snapshot.get("fps_limit_index", DEFAULT_FPS_LIMIT_INDEX))
 	var target_size: Vector2i = SettingsHelper.pick_resolution(RESOLUTION_OPTIONS, resolution_index)
+	Engine.max_fps = SettingsHelper.pick_fps_limit(FPS_LIMIT_OPTIONS, fps_limit_index)
 	var window: Window = _get_main_window()
 	if _is_embedded_window(window):
 		_apply_embedded_resolution(target_size, window)
@@ -146,7 +168,8 @@ func _load_snapshot_from_disk() -> Dictionary:
 
 	return {
 		"mode_index": int(config.get_value("display", "mode_index", DEFAULT_WINDOW_MODE)),
-		"resolution_index": int(config.get_value("display", "resolution_index", _pick_best_resolution_index()))
+		"resolution_index": int(config.get_value("display", "resolution_index", _pick_best_resolution_index())),
+		"fps_limit_index": int(config.get_value("display", "fps_limit_index", DEFAULT_FPS_LIMIT_INDEX))
 	}
 
 
@@ -154,6 +177,7 @@ func _save_snapshot_to_disk(snapshot: Dictionary) -> bool:
 	var config: ConfigFile = ConfigFile.new()
 	config.set_value("display", "mode_index", int(snapshot.get("mode_index", DEFAULT_WINDOW_MODE)))
 	config.set_value("display", "resolution_index", int(snapshot.get("resolution_index", _pick_best_resolution_index())))
+	config.set_value("display", "fps_limit_index", int(snapshot.get("fps_limit_index", DEFAULT_FPS_LIMIT_INDEX)))
 	return config.save(DISPLAY_CONFIG_PATH) == OK
 
 
